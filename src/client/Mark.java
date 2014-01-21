@@ -1,11 +1,13 @@
 package client;
 
 /**
- * Created with IntelliJ IDEA.
- * User: Rick
- * Date: 21-1-14
- * Time: 12:45
+ * @author Rick Fontein en Michiel te Braake
+ * @version 0.1
+ */
+
+/**
+ * Values represented in a field.
  */
 public enum Mark {
-     EMPTY, RED, YELLOW, BLUE, GREEN;
+     EMPTY, RED, YELLOW, GREEN, BLUE;
 }
