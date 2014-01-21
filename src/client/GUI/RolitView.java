@@ -1,14 +1,19 @@
 package client.GUI;
 
+import client.Board;
+import client.Game;
+
 import javax.swing.*;
 import java.awt.*;
+import java.util.Observable;
+import java.util.Observer;
 
 /**
  * @author Rick Fontein en Michiel te Braake
  * @version 0.1
  */
 
-public class RolitView extends JFrame {
+public class RolitView extends JFrame implements Observer {
     private ButtonListener buttonListener = new ButtonListener(this);
 
     private JButton[] buttons = new JButton[64];
@@ -63,5 +68,22 @@ public class RolitView extends JFrame {
         menuBar.add(file);
 
         setVisible(true);
+    }
+
+    /**
+     * Update the GUI buttons with the current state of the fields.
+     * This method is called via the <code>notifyObservers()</code> method in game.
+     * @param observable the game controller
+     * @param arg
+     */
+    @Override
+    public void update(Observable observable, Object arg) {
+        if(observable instanceof Game){
+            Game game = (Game) observable;
+            Board board = game.getBoard();
+            for(int i = 0; i < buttons.length; i++){
+                buttons[i].setText(board.getField(i));
+            }
+        }
     }
 }
