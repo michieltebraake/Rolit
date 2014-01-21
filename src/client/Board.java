@@ -11,6 +11,7 @@ public class Board {
 
     /**
      * Constructs a board.
+     *
      * @param players number of players in the game
      */
     public Board(int players) {
@@ -22,6 +23,7 @@ public class Board {
 
     /**
      * Returns FieldID.
+     *
      * @param x x-coordinate
      * @param y y-coordinate
      * @return FieldID
@@ -31,9 +33,21 @@ public class Board {
     }
 
     /**
+     * Returns an array with an x an y coordinate.
+     * @param fieldID FieldID
+     * @return array containing [x,y]
+     */
+    public int[] getCoordinates(int fieldID) {
+        int x = fieldID % DIM;
+        int y = (int) Math.floor(fieldID / DIM);
+        return new int[]{x, y};
+    }
+
+    /**
      * Sets a field to a given mark.
+     *
      * @param fieldID fieldID
-     * @param mark mark
+     * @param mark    mark
      */
     public void setField(int fieldID, Mark mark) {
         fields[fieldID] = mark;
@@ -41,8 +55,9 @@ public class Board {
 
     /**
      * Sets a field to a given mark.
-     * @param x x-coordinate
-     * @param y y-coordinate
+     *
+     * @param x    x-coordinate
+     * @param y    y-coordinate
      * @param mark mark
      */
     public void setField(int x, int y, Mark mark) {
@@ -51,6 +66,7 @@ public class Board {
 
     /**
      * Returns the value of a given field.
+     *
      * @param fieldID fieldID.
      * @return mark
      */
@@ -60,6 +76,7 @@ public class Board {
 
     /**
      * Returns the value of a given field.
+     *
      * @param x x-coordinate
      * @param y y-coordinate
      * @return mark
@@ -67,6 +84,11 @@ public class Board {
     public Mark getField(int x, int y) {
         return fields[getFieldID(x, y)];
     }
+
+    public int getPlayers(){
+        return players;
+    }
+
 
     /**
      * Resets the board to the initial position of a game.
