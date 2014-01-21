@@ -5,6 +5,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 
+/**
+ * @author Rick Fontein en Michiel te Braake
+ * @version 0.1
+ */
+
 public class ButtonListener implements ActionListener {
     private RolitView rolitView;
 

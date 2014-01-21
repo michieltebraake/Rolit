@@ -3,6 +3,11 @@ package GUI;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * @author Rick Fontein en Michiel te Braake
+ * @version 0.1
+ */
+
 public class RolitView extends JFrame {
     private ButtonListener buttonListener = new ButtonListener(this);
 
@@ -14,10 +19,18 @@ public class RolitView extends JFrame {
         new RolitView().setupFrame();
     }
 
+    /**
+     * Returns an array of <code>JButton</code> buttons for the 8x8 game board.
+     * @return buttons Array of buttons
+     */
     public JButton[] getButtons() {
         return buttons;
     }
 
+    /**
+     * Returns the <code>JMenuItem</code> of the exit button.
+     * @return exitItem menuItem button
+     */
     public JMenuItem getExitItem(){
         return exitItem;
     }
