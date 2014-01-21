@@ -1,7 +1,7 @@
 package client.GUI;
 
-import client.Board;
 import client.Game;
+import client.Mark;
 
 import javax.swing.*;
 import java.awt.*;
@@ -14,18 +14,24 @@ import java.util.Observer;
  */
 
 public class RolitView extends JFrame implements Observer {
-    private ButtonListener buttonListener = new ButtonListener(this);
+    private ButtonListener buttonListener;
 
     private JButton[] buttons = new JButton[64];
 
     private JMenuItem exitItem;
 
-    public static void main(String[] args) {
-        new RolitView().setupFrame();
+    /**
+     * Constructor.
+     * Sets up the main view with the game board.
+     */
+    public RolitView(Game game) {
+        buttonListener = new ButtonListener(this, game);
+        setupFrame();
     }
 
     /**
      * Returns an array of <code>JButton</code> buttons for the 8x8 game board.
+     *
      * @return buttons Array of buttons
      */
     public JButton[] getButtons() {
@@ -34,9 +40,10 @@ public class RolitView extends JFrame implements Observer {
 
     /**
      * Returns the <code>JMenuItem</code> of the exit button.
+     *
      * @return exitItem menuItem button
      */
-    public JMenuItem getExitItem(){
+    public JMenuItem getExitItem() {
         return exitItem;
     }
 
@@ -73,16 +80,20 @@ public class RolitView extends JFrame implements Observer {
     /**
      * Update the GUI buttons with the current state of the fields.
      * This method is called via the <code>notifyObservers()</code> method in game.
+     *
      * @param observable the game controller
      * @param arg
      */
     @Override
     public void update(Observable observable, Object arg) {
-        if(observable instanceof Game){
+        if (observable instanceof Game) {
             Game game = (Game) observable;
-            Board board = game.getBoard();
-            for(int i = 0; i < buttons.length; i++){
-                buttons[i].setText(board.getField(i));
+            for (int i = 0; i < buttons.length; i++) {
+                Color background = Mark.getColor(game.getBoard().getField(i));
+                if (background != null) {
+                    buttons[i].setBackground(Mark.getColor(game.getBoard().getField(i)));
+                    buttons[i].setEnabled(false);
+                }
             }
         }
     }

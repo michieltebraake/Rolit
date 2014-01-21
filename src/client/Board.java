@@ -29,11 +29,12 @@ public class Board {
      * @return FieldID
      */
     public int getFieldID(int x, int y) {
-        return DIM * x + y;
+        return x + DIM * y;
     }
 
     /**
      * Returns an array with an x an y coordinate.
+     *
      * @param fieldID FieldID
      * @return array containing [x,y]
      */
@@ -85,7 +86,18 @@ public class Board {
         return fields[getFieldID(x, y)];
     }
 
-    public int getPlayers(){
+    /**
+     * Checks if given location is valid (fits on the board)
+     *
+     * @param x x-coordinate
+     * @param y x-coordinate
+     * @return valid whether location is valid
+     */
+    public static boolean validLocation(int x, int y) {
+        return x >= 0 && x < Board.DIM && y >= 0 && y < Board.DIM;
+    }
+
+    public int getPlayers() {
         return players;
     }
 
@@ -97,9 +109,9 @@ public class Board {
         for (int i = 0; i < fields.length; i++) {
             setField(i, Mark.EMPTY);
         }
-        setField(4, 4, Mark.BLUE);
-        setField(4, 5, Mark.RED);
-        setField(5, 4, Mark.GREEN);
-        setField(5, 5, Mark.YELLOW);
+        setField(3, 4, Mark.BLUE);
+        setField(3, 3, Mark.RED);
+        setField(4, 4, Mark.GREEN);
+        setField(4, 3, Mark.YELLOW);
     }
 }
