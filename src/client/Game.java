@@ -86,10 +86,53 @@ public class Game extends Observable {
         return foundOwnMark ? otherMarkFields : null;
     }
 
+    private boolean canFormLineFrom(int x, int y) {
+        for (int i = 0; i < Board.DIM; i++) {
+            if (canFormLineFrom(x, y, xMoves[i], yMoves[i])) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean canFormLineFrom(int x, int y, int addX, int addY) {
+        boolean foundOtherMark = false;
+
+        //Add to x & y before starting to loop (don't want to check the field that is being changed)
+        x += addX;
+        y += addY;
+
+        while (x >= 0 && x < Board.DIM && y >= 0 && y < Board.DIM) {
+            if (board.getField(x, y) == Mark.EMPTY) {
+                return foundOtherMark;
+            } else if (board.getField(x, y) != current) {
+                foundOtherMark = true;
+            } else {
+                return false;
+            }
+
+            x += addX;
+            y += addY;
+        }
+
+        return false;
+    }
+
     private boolean hasMark(Mark mark) {
         for (int i = 0; i < 64; i++) {
             if (board.getField(i) == mark) {
                 return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean canMakeMove() {
+        for (int i = 0; i < Board.DIM * Board.DIM; i++) {
+            if (board.getField(i) == current) {
+                if (canFormLineFrom(board.getCoordinates(i)[0], board.getCoordinates(i)[1])) {
+                    return true;
+                }
             }
         }
         return false;
@@ -122,25 +165,28 @@ public class Game extends Observable {
      * @param y y-coordinate of move
      */
     public void takeTurn(int x, int y) {
-        //Check if player has marks on the board.
-        if (hasMark(current)) {
-            List<Integer> rollFields = getRollFields(x, y);
-            if (!rollFields.isEmpty()) {
-                board.setField(x, y, current);
-                for (int field : rollFields) {
-                    board.setField(field, current);
-                }
-                current = current.next(current, board.getPlayers());
-                setChanged();
-                notifyObservers();
+        //Check if player has marks on the board & player can make a valid move.
+        List<Integer> rollFields = getRollFields(x, y);
+
+        if(!canMakeMove() && nextToBall(x, y)){
+            board.setField(x, y, current);
+            makeMove();
+        } else if (!rollFields.isEmpty()) {
+            board.setField(x, y, current);
+            for (int field : rollFields) {
+                board.setField(field, current);
             }
-        } else {
-            if (nextToBall(x, y)) {
-                board.setField(x, y, current);
-                current = current.next(current, board.getPlayers());
-                setChanged();
-                notifyObservers();
-            }
+            makeMove();
+        }
+    }
+
+    private void makeMove() {
+        current = current.next(current, board.getPlayers());
+        setChanged();
+        notifyObservers();
+
+        if (board.isFull()) {
+            System.out.println(board.getWinner()); //TODO Do something to show winner + restart
         }
     }
 }
