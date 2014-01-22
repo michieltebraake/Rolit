@@ -25,6 +25,8 @@ public class ButtonListener implements ActionListener {
     public void actionPerformed(ActionEvent event) {
         if (rolitView.getExitItem().equals(event.getSource())) {
             rolitView.dispatchEvent(new WindowEvent(rolitView, WindowEvent.WINDOW_CLOSING));
+        } else if (rolitView.getRestartItem().equals(event.getSource())) {
+            game.reset();
         }
 
         JButton[] buttons = rolitView.getButtons();

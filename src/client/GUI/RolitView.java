@@ -19,6 +19,7 @@ public class RolitView extends JFrame implements Observer {
     private JButton[] buttons = new JButton[64];
 
     private JMenuItem exitItem;
+    private JMenuItem restartItem;
 
     /**
      * Constructor.
@@ -39,12 +40,17 @@ public class RolitView extends JFrame implements Observer {
     }
 
     /**
-     * Returns the <code>JMenuItem</code> of the exit button.
-     *
-     * @return exitItem menuItem button
+     * @return exitItem the <code>JMenuItem</code> of the exit button.
      */
     public JMenuItem getExitItem() {
         return exitItem;
+    }
+
+    /**
+     * @return restartItem the <code>JMenuItem</code> of the restart buttons
+     */
+    public JMenuItem getRestartItem() {
+        return restartItem;
     }
 
     private void setupFrame() {
@@ -68,10 +74,13 @@ public class RolitView extends JFrame implements Observer {
         setJMenuBar(menuBar);
 
         JMenu file = new JMenu("File");
+        restartItem = new JMenuItem("Restart");
+        restartItem.addActionListener(buttonListener);
+        file.add(restartItem);
         exitItem = new JMenuItem("Exit");
         exitItem.addActionListener(buttonListener);
-
         file.add(exitItem);
+
         menuBar.add(file);
 
         setVisible(true);
@@ -90,9 +99,11 @@ public class RolitView extends JFrame implements Observer {
             Game game = (Game) observable;
             for (int i = 0; i < buttons.length; i++) {
                 Mark mark = game.getBoard().getField(i);
+                buttons[i].setBackground(mark.getColor());
                 if (mark != Mark.EMPTY) {
-                    buttons[i].setBackground(mark.getColor());
                     buttons[i].setEnabled(false);
+                } else {
+                    buttons[i].setEnabled(true);
                 }
             }
         }

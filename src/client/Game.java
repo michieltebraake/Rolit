@@ -2,6 +2,7 @@ package client;
 
 import client.GUI.RolitView;
 
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
@@ -13,6 +14,8 @@ import java.util.Observable;
 
 public class Game extends Observable {
     private Board board;
+    private RolitView rolitView;
+
     private Mark current = Mark.RED;
 
     private final static int[] xMoves = new int[]{0, 1, 1, 1, 0, -1, -1, -1};
@@ -24,7 +27,8 @@ public class Game extends Observable {
 
     public Game() {
         board = new Board(4);
-        this.addObserver(new RolitView(this));
+        rolitView = new RolitView(this);
+        this.addObserver(rolitView);
 
         setChanged();
         notifyObservers();
@@ -186,7 +190,7 @@ public class Game extends Observable {
         notifyObservers();
 
         if (board.isFull()) {
-            System.out.println(board.getWinner()); //TODO Do something to show winner + restart
+            JOptionPane.showMessageDialog(rolitView, board.getWinner().toString() + " has won the game!", "Game over!", JOptionPane.INFORMATION_MESSAGE);
         }
     }
 }
