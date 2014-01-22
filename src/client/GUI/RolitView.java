@@ -89,9 +89,9 @@ public class RolitView extends JFrame implements Observer {
         if (observable instanceof Game) {
             Game game = (Game) observable;
             for (int i = 0; i < buttons.length; i++) {
-                Color background = Mark.getColor(game.getBoard().getField(i));
-                if (background != null) {
-                    buttons[i].setBackground(Mark.getColor(game.getBoard().getField(i)));
+                Mark mark = game.getBoard().getField(i);
+                if (mark != Mark.EMPTY) {
+                    buttons[i].setBackground(mark.getColor());
                     buttons[i].setEnabled(false);
                 }
             }

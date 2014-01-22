@@ -1,5 +1,8 @@
 package client;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * @author Rick Fontein en Michiel te Braake
  * @version 0.1
@@ -84,6 +87,40 @@ public class Board {
      */
     public Mark getField(int x, int y) {
         return fields[getFieldID(x, y)];
+    }
+
+    /**
+     * Tests if the entire board is full.
+     *
+     * @return true if all fields are occupied.
+     */
+    public boolean isFull() {
+        for (Mark mark : fields) {
+            if (mark == Mark.EMPTY) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public Mark getWinner() {
+        HashMap<Mark, Integer> markFields = new HashMap<>();
+
+        for (Mark mark : fields) {
+            if(markFields.containsKey(mark)){
+                markFields.put(mark, markFields.get(mark) + 1);
+            } else {
+                markFields.put(mark, 1);
+            }
+        }
+
+        Map.Entry<Mark,Integer> maxEntry = null;
+        for(Map.Entry<Mark,Integer> entry : markFields.entrySet()) {
+            if (maxEntry == null || entry.getValue() > maxEntry.getValue()) {
+                maxEntry = entry;
+            }
+        }
+        return maxEntry.getKey();
     }
 
     /**
