@@ -44,7 +44,7 @@ public enum Mark {
                 }
             case 3:
                 switch(currentMark){
-                    case RED;
+                    case RED:
                         return YELLOW;
                     case YELLOW:
                         return GREEN;
@@ -55,7 +55,7 @@ public enum Mark {
                 }
             case 4:
                 switch(currentMark){
-                    case RED;
+                    case RED:
                         return YELLOW;
                     case YELLOW:
                         return GREEN;
