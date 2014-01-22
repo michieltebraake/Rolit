@@ -1,6 +1,7 @@
 package client;
 
 import client.GUI.RolitView;
+import client.Strategy.SmartStrategy;
 
 import javax.swing.*;
 import java.util.ArrayList;
@@ -26,7 +27,7 @@ public class Game extends Observable {
     }
 
     public Game() {
-        board = new Board(4);
+        board = new Board(2);
         rolitView = new RolitView(this);
         this.addObserver(rolitView);
 
@@ -131,7 +132,7 @@ public class Game extends Observable {
         return false;
     }
 
-    private boolean canMakeMove() {
+    public boolean canMakeMove() {
         for (int i = 0; i < Board.DIM * Board.DIM; i++) {
             if (board.getField(i) == current) {
                 if (canFormLineFrom(board.getCoordinates(i)[0], board.getCoordinates(i)[1])) {
@@ -142,7 +143,7 @@ public class Game extends Observable {
         return false;
     }
 
-    private boolean nextToBall(int x, int y) {
+    public boolean nextToBall(int x, int y) {
         for (int i = 0; i < Board.DIM; i++) {
             if (Board.validLocation(x + xMoves[i], y + yMoves[i]) && board.getField(x + xMoves[i], y + yMoves[i]) != Mark.EMPTY) {
                 return true;
@@ -159,6 +160,17 @@ public class Game extends Observable {
         board.resetBoard();
         setChanged();
         notifyObservers();
+    }
+
+    /**
+     * Places a move at given field id.
+     * Will not change anything if move is not valid.
+     *
+     * @param field field id
+     */
+    public void takeTurn (int field) {
+        int[] coordinates = board.getCoordinates(field);
+        takeTurn(coordinates[0], coordinates[1]);
     }
 
     /**
@@ -191,6 +203,12 @@ public class Game extends Observable {
 
         if (board.isFull()) {
             JOptionPane.showMessageDialog(rolitView, board.getWinner().toString() + " has won the game!", "Game over!", JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+
+        if (current != Mark.RED) {
+            SmartStrategy smartStrategy = new SmartStrategy(this);
+            takeTurn(smartStrategy.determineMove(board, current));
         }
     }
 }
