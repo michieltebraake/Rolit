@@ -1,0 +1,10 @@
+##################################
+# name                 # pass    #
+##################################
+# player_michiel       # koekje  #
+# player_ebakkenbanaan # koekje  #
+# player_test1         # test1   #
+# player_test2         # test2   #
+# player_test3         # test3   #
+# player_test4         # test4   #
+##################################
