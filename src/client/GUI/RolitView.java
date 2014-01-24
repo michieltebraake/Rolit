@@ -1,6 +1,6 @@
 package client.GUI;
 
-import client.Game;
+import client.Board;
 import client.Mark;
 
 import javax.swing.*;
@@ -21,12 +21,15 @@ public class RolitView extends JFrame implements Observer {
     private JMenuItem exitItem;
     private JMenuItem restartItem;
 
+    private Board board;
+
     /**
      * Constructor.
      * Sets up the main view with the game board.
      */
-    public RolitView(Game game) {
-        buttonListener = new ButtonListener(this, game);
+    public RolitView(Board board) {
+        this.board = board;
+        buttonListener = new ButtonListener(this, board);
         setupFrame();
     }
 
@@ -54,6 +57,11 @@ public class RolitView extends JFrame implements Observer {
     }
 
     private void setupFrame() {
+
+        JPanel infoPanel = new JPanel();
+        //infoPanel.setLayout(new BorderLayout(3, BorderLayout.EAST));
+
+
         //Add buttons
         JPanel buttonPanel = new JPanel();
 
@@ -95,16 +103,13 @@ public class RolitView extends JFrame implements Observer {
      */
     @Override
     public void update(Observable observable, Object arg) {
-        if (observable instanceof Game) {
-            Game game = (Game) observable;
-            for (int i = 0; i < buttons.length; i++) {
-                Mark mark = game.getBoard().getField(i);
-                buttons[i].setBackground(mark.getColor());
-                if (mark != Mark.EMPTY) {
-                    buttons[i].setEnabled(false);
-                } else {
-                    buttons[i].setEnabled(true);
-                }
+        for (int i = 0; i < buttons.length; i++) {
+            Mark mark = board.getField(i);
+            buttons[i].setBackground(mark.getColor());
+            if (mark != Mark.EMPTY) {
+                buttons[i].setEnabled(false);
+            } else {
+                buttons[i].setEnabled(true);
             }
         }
     }

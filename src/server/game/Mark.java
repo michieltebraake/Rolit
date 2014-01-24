@@ -1,4 +1,4 @@
-package client;
+package server.game;
 
 /**
  * @author Rick Fontein en Michiel te Braake

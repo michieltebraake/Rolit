@@ -17,7 +17,9 @@ public class Game extends Observable {
     private Board board;
     private RolitView rolitView;
 
-    private Mark current = Mark.RED;
+    private int current = 0;
+
+    private Player[] players;
 
     private final static int[] xMoves = new int[]{0, 1, 1, 1, 0, -1, -1, -1};
     private final static int[] yMoves = new int[]{1, 1, 0, -1, -1, -1, 0, 1};
@@ -28,6 +30,7 @@ public class Game extends Observable {
 
     public Game() {
         board = new Board(2);
+        players = new Player[2];
         rolitView = new RolitView(this);
         this.addObserver(rolitView);
 
@@ -45,7 +48,7 @@ public class Game extends Observable {
     /**
      * @return mark the current mark
      */
-    public Mark getCurrent() {
+    public int getCurrent() {
         return current;
     }
 
@@ -206,7 +209,7 @@ public class Game extends Observable {
             return;
         }
 
-        if (current != Mark.RED) {
+        if (current != Mark.RED && current != Mark.GREEN) {
             SmartStrategy smartStrategy = new SmartStrategy(this);
             takeTurn(smartStrategy.determineMove(board, current));
         }

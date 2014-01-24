@@ -1,6 +1,6 @@
 package client.GUI;
 
-import client.Game;
+import client.Board;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -14,11 +14,11 @@ import java.awt.event.WindowEvent;
 
 public class ButtonListener implements ActionListener {
     private RolitView rolitView;
-    private Game game;
+    private Board board;
 
-    public ButtonListener(RolitView rolitView, Game game) {
+    public ButtonListener(RolitView rolitView, Board board) {
         this.rolitView = rolitView;
-        this.game = game;
+        this.board = board;
     }
 
     @Override
@@ -26,14 +26,14 @@ public class ButtonListener implements ActionListener {
         if (rolitView.getExitItem().equals(event.getSource())) {
             rolitView.dispatchEvent(new WindowEvent(rolitView, WindowEvent.WINDOW_CLOSING));
         } else if (rolitView.getRestartItem().equals(event.getSource())) {
-            game.reset();
+            //TODO Send reset request via protocol
         }
 
         JButton[] buttons = rolitView.getButtons();
         for (int i = 0; i < buttons.length; i++) {
             if (buttons[i].equals(event.getSource())) {
-                int[] coordinates = game.getBoard().getCoordinates(i);
-                game.takeTurn(coordinates[0], coordinates[1]);
+                int[] coordinates = board.getCoordinates(i);
+                //game.takeTurn(coordinates[0], coordinates[1]); //TODO Send move via protocol
             }
         }
     }

@@ -1,4 +1,4 @@
-package client;
+package server.game;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,7 +12,7 @@ import java.util.Map;
 public class Board {
     public static final int DIM = 8;
     private Mark[] fields;
-    private Player[] players;
+    private ConnectedPlayer[] players;
 
     private final static int[] xMoves = new int[]{0, 1, 1, 1, 0, -1, -1, -1};
     private final static int[] yMoves = new int[]{1, 1, 0, -1, -1, -1, 0, 1};
@@ -21,8 +21,8 @@ public class Board {
      * Constructs a board.
      *
      * @param players array of players in the game
-    */
-    public Board(Player[] players) {
+     */
+    public Board(ConnectedPlayer[] players) {
         this.players = players;
         fields = new Mark[DIM * DIM];
         resetBoard();
@@ -31,7 +31,7 @@ public class Board {
     /**
      * @return Player[] array of players in the game
      */
-    public Player[] getPlayers() {
+    public ConnectedPlayer[] getPlayers() {
         return players;
     }
 
@@ -118,15 +118,15 @@ public class Board {
         HashMap<Mark, Integer> markFields = new HashMap<>();
 
         for (Mark mark : fields) {
-            if (markFields.containsKey(mark)) {
+            if(markFields.containsKey(mark)){
                 markFields.put(mark, markFields.get(mark) + 1);
             } else {
                 markFields.put(mark, 1);
             }
         }
 
-        Map.Entry<Mark, Integer> maxEntry = null;
-        for (Map.Entry<Mark, Integer> entry : markFields.entrySet()) {
+        Map.Entry<Mark,Integer> maxEntry = null;
+        for(Map.Entry<Mark,Integer> entry : markFields.entrySet()) {
             if (maxEntry == null || entry.getValue() > maxEntry.getValue()) {
                 maxEntry = entry;
             }
