@@ -17,12 +17,15 @@ public class Game extends Observable {
 
     private int current = 0;
 
-    public static void main(String[] args) {
-        new Game();
-    }
+    public Game(ConnectedPlayer[] players) {
+        board = new Board(players); //TODO Grab players from protocol joins
 
-    public Game() {
-        board = new Board(new ConnectedPlayer[]{new ConnectedPlayer("test1", Mark.RED), new ConnectedPlayer("test2", Mark.YELLOW)}); //TODO Grab players from protocol joins
+        //Start the game
+        for (ConnectedPlayer player : players) {
+            player.getPeer().getServerConnection().startGame(players);
+        }
+        players[current].getPeer().getServerConnection().requestMove();
+
         //rolitView = new RolitView(this);
         //this.addObserver(rolitView);
 
@@ -79,29 +82,36 @@ public class Game extends Observable {
 
         if(!board.canMakeMove(currentMark) && board.nextToBall(x, y)){
             board.setField(x, y, currentMark);
-            makeMove();
+            makeMove(board.getFieldID(x, y));
         } else if (!rollFields.isEmpty()) {
             board.setField(x, y, currentMark);
             for (int field : rollFields) {
                 board.setField(field, currentMark);
             }
-            makeMove();
+            makeMove(board.getFieldID(x, y));
         }
     }
 
-    private void makeMove() {
-        current = current++;
-        setChanged();
-        notifyObservers();
+    private void makeMove(int field) {
+        ConnectedPlayer[] players = board.getPlayers();
+
+        System.out.println(current);
+
+        current++;
+        current = current % players.length;
+
+        System.out.println(current);
+
+        //Send move to all clients.
+        for (ConnectedPlayer player : players) {
+            player.getPeer().getServerConnection().broadcastMove(field);
+        }
+        //Request move from next client.
+        players[current].getPeer().getServerConnection().requestMove();
 
         if (board.isFull()) {
+            //TODO Send game end via protocol
             JOptionPane.showMessageDialog(rolitView, board.getWinner().toString() + " has won the game!", "Game over!", JOptionPane.INFORMATION_MESSAGE);
-            return;
         }
-
-        /*if (players[current].getMark() != Mark.RED && players[current].getMark() != Mark.GREEN) {
-            SmartStrategy smartStrategy = new SmartStrategy(this);
-            takeTurn(smartStrategy.determineMove(board, players[current].getMark()));
-        }*/ //TODO Replace this with sending a request to client for a move.
     }
 }

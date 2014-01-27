@@ -17,7 +17,6 @@ public class Peer implements Runnable {
 
     protected BufferedReader inStream;
     protected BufferedWriter outStream;
-    protected BufferedReader systemIn;
 
 	/*@
        requires (nameArg != null) && (sockArg != null);
@@ -33,9 +32,8 @@ public class Peer implements Runnable {
         this.name = name;
         this.socket = socket;
 
-        inStream = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
-        outStream = new BufferedWriter(new OutputStreamWriter(this.socket.getOutputStream()));
-        systemIn = new BufferedReader(new InputStreamReader(System.in));
+        inStream = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        outStream = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
     }
 
     /**
@@ -44,6 +42,15 @@ public class Peer implements Runnable {
     public void run() {
         try {
             System.out.println(inStream.readLine());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void send(String message) {
+        try {
+            outStream.write(message + "\n");
+            outStream.flush();
         } catch (IOException e) {
             e.printStackTrace();
         }

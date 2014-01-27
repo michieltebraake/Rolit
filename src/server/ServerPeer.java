@@ -1,8 +1,9 @@
 package server;
 
+import server.game.ServerConnection;
+
 import java.io.*;
 import java.net.Socket;
-import java.util.Scanner;
 
 /**
  * Peer for a simple client-server application
@@ -16,6 +17,8 @@ public class ServerPeer implements Runnable {
 
     protected BufferedReader inStream;
     protected BufferedWriter outStream;
+
+    private ServerConnection serverConnection;
 
 	/*@
        requires (nameArg != null) && (sockArg != null);
@@ -31,26 +34,33 @@ public class ServerPeer implements Runnable {
 
         inStream = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
         outStream = new BufferedWriter(new OutputStreamWriter(this.socket.getOutputStream()));
+
+        serverConnection = new ServerConnection(this);
+    }
+
+    public ServerConnection getServerConnection() {
+        return serverConnection;
     }
 
     /**
      * Reads strings of the stream of the socket-connection and writes the characters to the default output
      */
     public void run() {
-        try {
-            String message = inStream.readLine();
-            Scanner scanner = new Scanner(message).useDelimiter("\\s+");
-            String protocolWord = scanner.next();
-            if (protocolWord.equals(Protocol.EXIT)) {
-                shutDown();
-            } else {
-                switch(protocolWord) {
-                    case Protocol.JOIN_GAME:
-                        System.out.println("Player joined the game!");
-                        break;
-                }
-                System.out.println(inStream.readLine());
+        while (true) {
+            try {
+                String message = inStream.readLine();
+                System.out.println(message);
+                serverConnection.handleMessage(message);
+            } catch (IOException e) {
+                e.printStackTrace();
             }
+        }
+    }
+
+    public void send(String message) {
+        try {
+            outStream.write(message + "\n");
+            outStream.flush();
         } catch (IOException e) {
             e.printStackTrace();
         }

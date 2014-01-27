@@ -1,5 +1,7 @@
 package client.Connection;
 
+import client.GUI.RolitView;
+
 import java.io.*;
 import java.net.Socket;
 
@@ -18,6 +20,8 @@ public class ClientPeer implements Runnable {
     protected BufferedReader inStream;
     protected BufferedWriter outStream;
 
+    private ClientConnection clientConnection;
+
 	/*@
        requires (nameArg != null) && (sockArg != null);
 	 */
@@ -27,26 +31,33 @@ public class ClientPeer implements Runnable {
      *
      * @param socket Socket of the Peer-proces
      */
-    public ClientPeer(Socket socket) throws IOException {
+    public ClientPeer(Socket socket, RolitView rolitView) throws IOException {
         this.socket = socket;
 
         inStream = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
         outStream = new BufferedWriter(new OutputStreamWriter(this.socket.getOutputStream()));
+
+        clientConnection = new ClientConnection(this, rolitView);
     }
 
     /**
      * Reads strings of the stream of the socket-connection and writes the characters to the default output
      */
     public void run() {
-        try {
-            System.out.println(inStream.readLine());
-        } catch (IOException e) {
-            e.printStackTrace();
+        while (true) {
+            try {
+                String message = inStream.readLine();
+                System.out.println("Received: " + message);
+                clientConnection.handleMessage(message);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
     public void send(String message) {
         try {
+            System.out.println("Sent: " + message);
             outStream.write(message + "\n");
             outStream.flush();
         } catch (IOException e) {
@@ -64,7 +75,7 @@ public class ClientPeer implements Runnable {
             if (message.equals("exit")) {
                 shutDown();
             } else {
-                outStream.write("[ " + name + " ] "  + message + "\n");
+                outStream.write("[ " + name + " ] " + message + "\n");
                 outStream.flush();
             }
         } catch (IOException e) {
