@@ -1,14 +1,10 @@
 package client.Strategy;
 
 import client.Board;
-import client.Game;
 import client.Mark;
 
 public class SmartStrategy implements Strategy {
-    private Game game;
-
-    public SmartStrategy(Game game){
-        this.game = game;
+    public SmartStrategy(){
     }
 
     @Override
@@ -18,13 +14,13 @@ public class SmartStrategy implements Strategy {
 
     @Override
     public int determineMove(Board board, Mark mark) {
-        if(game.canMakeMove()){
+        if(board.canMakeMove(mark)){
             int bestField = -1;
             int mostFlips = -1;
             for (int i = 0; i < Board.DIM * Board.DIM; i++) {
                 if (board.getField(i) == Mark.EMPTY) {
                     int[] coordinates = board.getCoordinates(i);
-                    int flips = game.getRollFields(coordinates[0], coordinates[1]).size();
+                    int flips = board.getRollFields(mark, coordinates[0], coordinates[1]).size();
                     if (flips > mostFlips) {
                         bestField = i;
                         mostFlips = flips;
@@ -36,7 +32,7 @@ public class SmartStrategy implements Strategy {
             for (int i = 0; i < Board.DIM * Board.DIM; i++) {
                 if (board.getField(i) == Mark.EMPTY) {
                     int[] coordinates = board.getCoordinates(i);
-                    if(game.nextToBall(coordinates[0], coordinates[1])){
+                    if(board.nextToBall(coordinates[0], coordinates[1])){
                         return i;
                     }
                 }

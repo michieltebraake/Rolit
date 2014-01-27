@@ -1,6 +1,7 @@
 package client.GUI;
 
-import client.Game;
+import client.Board;
+import client.Connection.ClientConnection;
 import client.Mark;
 
 import javax.swing.*;
@@ -18,16 +19,33 @@ public class RolitView extends JFrame implements Observer {
 
     private JButton[] buttons = new JButton[64];
 
+    private JMenuItem connectItem;
     private JMenuItem exitItem;
     private JMenuItem restartItem;
+
+    private Board board;
+    private ClientConnection clientConnection;
+
+    public static void main(String[] args) {
+        new RolitView();
+    }
 
     /**
      * Constructor.
      * Sets up the main view with the game board.
      */
-    public RolitView(Game game) {
-        buttonListener = new ButtonListener(this, game);
+    public RolitView() {
+        buttonListener = new ButtonListener(this);
         setupFrame();
+    }
+
+    public void setBoard(Board board) {
+        this.board = board;
+        buttonListener.setBoard(board);
+    }
+
+    public void setClientConnection(ClientConnection clientConnection) {
+        this.clientConnection = clientConnection;
     }
 
     /**
@@ -46,14 +64,27 @@ public class RolitView extends JFrame implements Observer {
         return exitItem;
     }
 
-    /**
-     * @return restartItem the <code>JMenuItem</code> of the restart buttons
-     */
+    public JMenuItem getConnectItem() {
+        return connectItem;
+    }
+
     public JMenuItem getRestartItem() {
         return restartItem;
     }
 
+    public ClientConnection getClientConnection() {
+        return clientConnection;
+    }
+
+    /**
+     * @return restartItem the <code>JMenuItem</code> of the restart buttons
+     */
+
     private void setupFrame() {
+
+        JPanel infoPanel = new JPanel();
+        //infoPanel.setLayout(new BorderLayout(3, BorderLayout.EAST));
+
         //Add buttons
         JPanel buttonPanel = new JPanel();
 
@@ -67,6 +98,7 @@ public class RolitView extends JFrame implements Observer {
             buttonPanel.add(rolitButton);
             buttons[i] = rolitButton;
             rolitButton.addActionListener(buttonListener);
+            rolitButton.setEnabled(false);
         }
 
         //Add menu bar
@@ -74,6 +106,9 @@ public class RolitView extends JFrame implements Observer {
         setJMenuBar(menuBar);
 
         JMenu file = new JMenu("File");
+        connectItem = new JMenuItem("Connect");
+        connectItem.addActionListener(buttonListener);
+        file.add(connectItem);
         restartItem = new JMenuItem("Restart");
         restartItem.addActionListener(buttonListener);
         file.add(restartItem);
@@ -95,11 +130,12 @@ public class RolitView extends JFrame implements Observer {
      */
     @Override
     public void update(Observable observable, Object arg) {
-        if (observable instanceof Game) {
-            Game game = (Game) observable;
-            for (int i = 0; i < buttons.length; i++) {
-                Mark mark = game.getBoard().getField(i);
-                buttons[i].setBackground(mark.getColor());
+        for (int i = 0; i < buttons.length; i++) {
+            Mark mark = board.getField(i);
+            buttons[i].setBackground(mark.getColor());
+            if (arg == false) {
+                buttons[i].setEnabled(false);
+            } else {
                 if (mark != Mark.EMPTY) {
                     buttons[i].setEnabled(false);
                 } else {
