@@ -1,5 +1,7 @@
 package client.GUI;
 
+import client.Connection.AuthConnect;
+import client.Connection.AuthenticationConnection;
 import client.Connection.Connect;
 
 import javax.swing.*;
@@ -7,6 +9,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
+import java.net.Socket;
+import java.security.PrivateKey;
 
 public class ConnectView extends JFrame implements ActionListener{
     private RolitView rolitView;
@@ -17,6 +21,9 @@ public class ConnectView extends JFrame implements ActionListener{
     private JTextField ipText;
     private JTextField portText;
     private JCheckBox aiBox;
+    private int port;
+    public final static String AUTH_SERVER = "130.89.163.155";
+    public final static int AUTH_PORT = 2013;
 
     public ConnectView(RolitView rolitView) {
         this.rolitView = rolitView;
@@ -73,7 +80,6 @@ public class ConnectView extends JFrame implements ActionListener{
     public void actionPerformed(ActionEvent event) {
         if(event.getSource() == connectButton) {
             if(!usernameText.getText().isEmpty() && !passwordText.getText().isEmpty() && !ipText.getText().isEmpty() && !portText.getText().isEmpty()) {
-                int port;
                 try {
                     port = Integer.parseInt(portText.getText());
                 } catch (NumberFormatException e) {
@@ -81,11 +87,22 @@ public class ConnectView extends JFrame implements ActionListener{
                     return;
                 }
 
-                Connect connect = new Connect(rolitView, ipText.getText(), port, usernameText.getText(), passwordText.getText(), aiBox.isSelected());
-                connect.start();
-                rolitView.getStatusLabel().setText("Connecting to " + ipText.getText() + ":" + port + "...");
+                AuthConnect authConnect = new AuthConnect(this, AUTH_SERVER, AUTH_PORT);
+                authConnect.start();
+                rolitView.getStatusLabel().setText("Authenticating user: " + usernameText.getText());
                 this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
             }
         }
+    }
+    public void setupAuthentication(Socket clientSocket) {
+        new AuthenticationConnection(clientSocket, this, usernameText.getText(), passwordText.getText());
+        System.out.println("AuthenticationConnection");
+    }
+
+    public void createClientConnection(PrivateKey privateKey){
+        Connect connect = new Connect(rolitView, ipText.getText(), port, usernameText.getText(), aiBox.isSelected(), privateKey);
+        connect.start();
+        rolitView.getStatusLabel().setText("Connecting to " + ipText.getText() + ":" + port + "...");
+
     }
 }

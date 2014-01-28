@@ -10,6 +10,7 @@ import util.ProtocolHandler;
 import javax.swing.*;
 import java.io.IOException;
 import java.net.Socket;
+import java.security.PrivateKey;
 import java.util.List;
 import java.util.Observable;
 
@@ -18,16 +19,15 @@ public class ClientConnection extends Observable implements ProtocolHandler {
     private Board board;
     private RolitView rolitView;
     private int current = 0;
-
     private String username;
     private boolean ai;
+    private PrivateKey privateKey;
 
-    public ClientConnection(Socket socket, RolitView rolitView, String username, String password, boolean ai) {
+    public ClientConnection(Socket socket, RolitView rolitView, String username, boolean ai, PrivateKey privateKey) {
         this.rolitView = rolitView;
-
         this.username = username;
         this.ai = ai;
-
+        this.privateKey = privateKey;
         try {
             peer = new ClientPeer(socket, this);
         } catch (IOException e) {

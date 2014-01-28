@@ -8,6 +8,7 @@ import javax.swing.*;
 import javax.swing.border.BevelBorder;
 import java.awt.*;
 import java.net.Socket;
+import java.security.PrivateKey;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -79,9 +80,9 @@ public class RolitView extends JFrame implements Observer {
         return clientConnection;
     }
 
-    public void setupProtocol(Socket socket, String username, String password, boolean ai) {
+    public void setupProtocol(Socket socket, String username, boolean ai, PrivateKey privateKey) {
         statusLabel.setText("Connected!");
-        clientConnection = new ClientConnection(socket, this, username, password, ai);
+        clientConnection = new ClientConnection(socket, this, username, ai, privateKey);
     }
 
     public void closeProtocol() {
