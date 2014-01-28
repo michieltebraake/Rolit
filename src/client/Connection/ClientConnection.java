@@ -3,6 +3,7 @@ package client.Connection;
 import client.*;
 import client.GUI.RolitView;
 import client.Strategy.SmartStrategy;
+import util.Crypto;
 import util.Mark;
 import util.Protocol;
 import util.ProtocolHandler;
@@ -35,7 +36,7 @@ public class ClientConnection extends Observable implements ProtocolHandler {
         }
         Thread thread = new Thread(peer);
         thread.start();
-        joinGame();
+        authenticate();
     }
 
     public Board getBoard() {
@@ -44,6 +45,10 @@ public class ClientConnection extends Observable implements ProtocolHandler {
 
     public boolean getAI() {
         return ai;
+    }
+
+    public void authenticate() {
+        peer.send(Protocol.AUTHENTICATE_CLIENT + " " + username);
     }
 
     public void joinGame() {
@@ -89,6 +94,16 @@ public class ClientConnection extends Observable implements ProtocolHandler {
             }
 
             switch (protocolMessage) {
+                case Protocol.TOKEN_REQUEST:
+                    String base64Token = Crypto.encodeBase64(Crypto.signMessage(args[0], privateKey));
+                    System.out.println(base64Token.contains("\n"));
+                    System.out.println("========> Sent base64: " + base64Token);
+                    peer.send(Protocol.TOKEN_REPLY + " " + base64Token);
+                    break;
+                case Protocol.AUTHENTICATED:
+                    System.out.println("Yay! it works.");
+                    //TODO ================ Client authenticated ================
+                    break;
                 case Protocol.START_GAME:
                     Mark[] marks = Mark.getMarks(args.length);
                     Player[] players = new Player[args.length];

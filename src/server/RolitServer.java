@@ -33,13 +33,16 @@ public class RolitServer {
         while (true) {
             try {
                 Socket clientSocket = serverSocket.accept();
-
                 ServerPeer peer = new ServerPeer(clientSocket);
                 Thread thread = new Thread(peer);
                 thread.start();
 
+
                 connections.add(peer);
 
+
+
+                /*
                 if (connections.size() == 4) {
                     int i = 0;
                     Mark[] marks = Mark.getMarks(connections.size());
@@ -54,7 +57,8 @@ public class RolitServer {
                     connections.clear(); //TODO Remove players from connections when they authenticate.
                     authenticatedPlayers.clear();
                     System.out.println("Starting game!");
-                }
+                    */
+
                 //peer.handleTerminalInput();
             } catch (IOException e) {
                 e.printStackTrace();
