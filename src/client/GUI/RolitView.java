@@ -1,7 +1,9 @@
 package client.GUI;
 
 import client.Board;
+import client.Connection.AuthenticationConnection;
 import client.Connection.ClientConnection;
+import client.Connection.Connect;
 import client.Mark;
 
 import javax.swing.*;
@@ -77,8 +79,8 @@ public class RolitView extends JFrame implements Observer {
         return clientConnection;
     }
 
-    public void setupProtocol(Socket socket) {
-        clientConnection = new ClientConnection(socket, this);
+    public void setupProtocol(Socket clientSocket){
+        clientConnection = new ClientConnection(clientSocket, this);
     }
 
     /**

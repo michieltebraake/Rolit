@@ -5,7 +5,7 @@ import client.GUI.RolitView;
 import client.HumanPlayer;
 import client.Mark;
 import client.Player;
-import server.Protocol;
+import util.Protocol;
 import util.ProtocolHandler;
 
 import java.io.IOException;
@@ -14,26 +14,29 @@ import java.util.List;
 import java.util.Observable;
 
 public class ClientConnection extends Observable implements ProtocolHandler {
-    private ClientPeer peer;
+    private ClientPeer clientPeer;
     private Board board;
     private RolitView rolitView;
 
+    private String username;
+    private String pasaword;
+
     private int current = 0;
 
-    public ClientConnection(Socket socket, RolitView rolitView) {
+    public ClientConnection(Socket clientSocket, RolitView rolitView) {
         this.rolitView = rolitView;
         try {
-            peer = new ClientPeer(socket, this);
+            clientPeer = new ClientPeer(clientSocket, this);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        Thread thread = new Thread(peer);
+        Thread thread = new Thread(clientPeer);
         thread.start();
         joinGame();
     }
 
     public void joinGame() {
-        peer.send(Protocol.JOIN_GAME + " " + 3);
+        clientPeer.send(Protocol.JOIN_GAME + " " + 3);
     }
 
     public void makeMove(int x, int y) {
@@ -42,9 +45,9 @@ public class ClientConnection extends Observable implements ProtocolHandler {
         List<Integer> rollFields = board.getRollFields(mark, x, y);
 
         if (!board.canMakeMove(mark) && board.nextToBall(x, y)) {
-            peer.send(Protocol.MAKE_MOVE + " " + board.getFieldID(x, y));
+            clientPeer.send(Protocol.MAKE_MOVE + " " + board.getFieldID(x, y));
         } else if (!rollFields.isEmpty()) {
-            peer.send(Protocol.MAKE_MOVE + " " + board.getFieldID(x, y));
+            clientPeer.send(Protocol.MAKE_MOVE + " " + board.getFieldID(x, y));
         }
     }
 

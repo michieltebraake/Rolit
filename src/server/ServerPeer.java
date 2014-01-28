@@ -1,6 +1,7 @@
 package server;
 
 import server.game.ServerConnection;
+import util.Protocol;
 
 import java.io.*;
 import java.net.Socket;

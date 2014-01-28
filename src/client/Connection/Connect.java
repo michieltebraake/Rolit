@@ -7,20 +7,20 @@ import java.net.Socket;
 
 public class Connect extends Thread {
     private RolitView rolitView;
-    private String ip;
-    private int port;
+    private String serverIP;
+    private int serverPort;
 
-    public Connect(RolitView rolitView, String ip, int port) {
+    public Connect(RolitView rolitView, String serverIP, int serverPort) {
         this.rolitView = rolitView;
-        this.ip = ip;
-        this.port = port;
+        this.serverIP = serverIP;
+        this.serverPort = serverPort;
     }
 
     public void run() {
-        Socket socket;
+        Socket clientSocket;
         try {
-            socket = new Socket(ip, port);
-            rolitView.setupProtocol(socket);
+            clientSocket = new Socket(serverIP, serverPort);
+            rolitView.setupProtocol(clientSocket);
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -1,6 +1,6 @@
 package server.game;
 
-import server.Protocol;
+import util.Protocol;
 import server.ServerPeer;
 
 public class ServerConnection {
