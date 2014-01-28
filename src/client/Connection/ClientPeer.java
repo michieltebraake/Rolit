@@ -1,6 +1,6 @@
 package client.Connection;
 
-import client.GUI.RolitView;
+import util.ProtocolHandler;
 
 import java.io.*;
 import java.net.Socket;
@@ -12,15 +12,13 @@ import java.net.Socket;
  * @version 2005.02.21
  */
 public class ClientPeer implements Runnable {
-    public static final String EXIT = "exit";
-
     protected String name;
     protected Socket socket;
 
     protected BufferedReader inStream;
     protected BufferedWriter outStream;
 
-    private ClientConnection clientConnection;
+    private ProtocolHandler protocolHandler;
 
 	/*@
        requires (nameArg != null) && (sockArg != null);
@@ -31,13 +29,12 @@ public class ClientPeer implements Runnable {
      *
      * @param socket Socket of the Peer-proces
      */
-    public ClientPeer(Socket socket, RolitView rolitView) throws IOException {
+    public ClientPeer(Socket socket, ProtocolHandler protocolHandler) throws IOException {
         this.socket = socket;
+        this.protocolHandler = protocolHandler;
 
         inStream = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
         outStream = new BufferedWriter(new OutputStreamWriter(this.socket.getOutputStream()));
-
-        clientConnection = new ClientConnection(this, rolitView);
     }
 
     /**
@@ -48,7 +45,7 @@ public class ClientPeer implements Runnable {
             try {
                 String message = inStream.readLine();
                 System.out.println("Received: " + message);
-                clientConnection.handleMessage(message);
+                protocolHandler.handleMessage(message);
             } catch (IOException e) {
                 e.printStackTrace();
             }

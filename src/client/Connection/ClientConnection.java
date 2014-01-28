@@ -6,21 +6,29 @@ import client.HumanPlayer;
 import client.Mark;
 import client.Player;
 import server.Protocol;
+import util.ProtocolHandler;
 
+import java.io.IOException;
+import java.net.Socket;
 import java.util.List;
 import java.util.Observable;
 
-public class ClientConnection extends Observable {
+public class ClientConnection extends Observable implements ProtocolHandler {
     private ClientPeer peer;
     private Board board;
     private RolitView rolitView;
 
     private int current = 0;
 
-    public ClientConnection(ClientPeer peer, RolitView rolitView) {
-        this.peer = peer;
+    public ClientConnection(Socket socket, RolitView rolitView) {
         this.rolitView = rolitView;
-        rolitView.setClientConnection(this);
+        try {
+            peer = new ClientPeer(socket, this);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Thread thread = new Thread(peer);
+        thread.start();
         joinGame();
     }
 

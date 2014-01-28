@@ -1,7 +1,6 @@
 package client.GUI;
 
 import client.Board;
-import client.Connection.Connect;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -32,8 +31,7 @@ public class ButtonListener implements ActionListener {
         } else if (rolitView.getRestartItem().equals(event.getSource())) {
             //TODO Send reset request via protocol
         } else if (rolitView.getConnectItem().equals(event.getSource())) {
-            Connect connect = new Connect(rolitView);
-            connect.start();
+             new ConnectView(rolitView);
         }
 
         JButton[] buttons = rolitView.getButtons();

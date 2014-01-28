@@ -6,6 +6,7 @@ import client.Mark;
 
 import javax.swing.*;
 import java.awt.*;
+import java.net.Socket;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -74,6 +75,10 @@ public class RolitView extends JFrame implements Observer {
 
     public ClientConnection getClientConnection() {
         return clientConnection;
+    }
+
+    public void setupProtocol(Socket socket) {
+        clientConnection = new ClientConnection(socket, this);
     }
 
     /**
