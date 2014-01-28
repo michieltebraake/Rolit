@@ -83,6 +83,7 @@ public class ConnectView extends JFrame implements ActionListener{
 
                 Connect connect = new Connect(rolitView, ipText.getText(), port, usernameText.getText(), passwordText.getText(), aiBox.isSelected());
                 connect.start();
+                rolitView.getStatusLabel().setText("Connecting to " + ipText.getText() + ":" + port + "...");
                 this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
             }
         }

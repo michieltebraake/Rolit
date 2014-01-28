@@ -1,5 +1,7 @@
 package client;
 
+import util.Mark;
+
 public abstract class Player {
     Mark mark;
     String name;

@@ -1,7 +1,7 @@
 package client.Strategy;
 
 import client.Board;
-import client.Mark;
+import util.Mark;
 
 public interface Strategy {
     /**

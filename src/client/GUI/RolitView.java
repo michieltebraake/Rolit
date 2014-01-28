@@ -1,9 +1,11 @@
 package client.GUI;
 
+import client.Board;
 import client.Connection.ClientConnection;
-import client.Mark;
+import util.Mark;
 
 import javax.swing.*;
+import javax.swing.border.BevelBorder;
 import java.awt.*;
 import java.net.Socket;
 import java.util.Observable;
@@ -17,11 +19,14 @@ import java.util.Observer;
 public class RolitView extends JFrame implements Observer {
     private ButtonListener buttonListener;
 
-    private JButton[] buttons = new JButton[64];
+    private JButton[] buttons = new JButton[Board.DIM * Board.DIM];
 
     private JMenuItem connectItem;
     private JMenuItem exitItem;
     private JMenuItem restartItem;
+
+    private JLabel statusLabel;
+    private JLabel gameLabel;
 
     private ClientConnection clientConnection;
 
@@ -62,15 +67,25 @@ public class RolitView extends JFrame implements Observer {
         return restartItem;
     }
 
+    public JLabel getStatusLabel() {
+        return statusLabel;
+    }
+
+    public JLabel getGameLabel() {
+        return gameLabel;
+    }
+
     public ClientConnection getClientConnection() {
         return clientConnection;
     }
 
     public void setupProtocol(Socket socket, String username, String password, boolean ai) {
+        statusLabel.setText("Connected!");
         clientConnection = new ClientConnection(socket, this, username, password, ai);
     }
 
     public void closeProtocol() {
+        statusLabel.setText("Not connected.");
         clientConnection = null;
     }
 
@@ -79,19 +94,15 @@ public class RolitView extends JFrame implements Observer {
      */
 
     private void setupFrame() {
-
-        JPanel infoPanel = new JPanel();
-        //infoPanel.setLayout(new BorderLayout(3, BorderLayout.EAST));
-
         //Add buttons
         JPanel buttonPanel = new JPanel();
 
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setSize(800, 800);
         add(buttonPanel);
 
-        buttonPanel.setLayout(new GridLayout(8, 8));
-        for (int i = 0; i < 64; i++) {
+        buttonPanel.setLayout(new GridLayout(Board.DIM, Board.DIM));
+        for (int i = 0; i < Board.DIM * Board.DIM; i++) {
             JButton rolitButton = new JButton();
             buttonPanel.add(rolitButton);
             buttons[i] = rolitButton;
@@ -116,6 +127,18 @@ public class RolitView extends JFrame implements Observer {
 
         menuBar.add(file);
 
+        //Add status bar at the bottom
+        JPanel statusPanel = new JPanel();
+        statusPanel.setBorder(new BevelBorder(BevelBorder.LOWERED));
+        add(statusPanel, BorderLayout.SOUTH);
+        statusPanel.setPreferredSize(new Dimension(getWidth(), 16));
+        statusPanel.setLayout(new BorderLayout());
+        //statusPanel.setLayout(new BoxLayout(statusPanel, BoxLayout.X_AXIS));
+        statusLabel = new JLabel("Not connected.");
+        statusPanel.add(statusLabel, BorderLayout.WEST);
+        gameLabel = new JLabel("Not in a game.");
+        statusPanel.add(gameLabel, BorderLayout.EAST);
+
         setVisible(true);
     }
 
@@ -133,7 +156,8 @@ public class RolitView extends JFrame implements Observer {
             for (int i = 0; i < buttons.length; i++) {
                 Mark mark = clientConnection.getBoard().getField(i);
                 buttons[i].setBackground(mark.getColor());
-                if (arg == false) {
+                //Check if client is AI (buttons should always be disabled for
+                if (clientConnection.getAI() || arg == false) {
                     buttons[i].setEnabled(false);
                 } else {
                     if (mark != Mark.EMPTY) {

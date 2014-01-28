@@ -1,5 +1,7 @@
 package server.game;
 
+import util.Mark;
+
 import java.util.List;
 import java.util.Observable;
 
@@ -72,6 +74,10 @@ public class Game extends Observable {
         //Check if player has marks on the board & player can make a valid move.
         Mark currentMark = board.getPlayers()[current].getMark();
         List<Integer> rollFields = board.getRollFields(currentMark, x, y);
+
+        System.out.println("Can make move: " + board.canMakeMove(currentMark));
+        System.out.println("Next to ball: " + board.nextToBall(x, y) + " at " + x + "," + y);
+        System.out.println("Rollfields: " + rollFields + " from mark " + currentMark);
 
         if(!board.canMakeMove(currentMark) && board.nextToBall(x, y)){
             board.setField(x, y, currentMark);

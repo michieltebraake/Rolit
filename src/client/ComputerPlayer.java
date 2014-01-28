@@ -1,6 +1,7 @@
 package client;
 
 import client.Strategy.Strategy;
+import util.Mark;
 
 public class ComputerPlayer extends Player {
     private Strategy strategy;

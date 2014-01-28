@@ -1,5 +1,7 @@
 package client;
 
+import util.Mark;
+
 public class HumanPlayer extends Player {
     public HumanPlayer(Mark mark, String name) {
         super(mark, name);

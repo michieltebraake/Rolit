@@ -1,11 +1,9 @@
 package client.Connection;
 
-import client.Board;
-import client.ComputerPlayer;
+import client.*;
 import client.GUI.RolitView;
-import client.Mark;
-import client.Player;
 import client.Strategy.SmartStrategy;
+import util.Mark;
 import util.Protocol;
 import util.ProtocolHandler;
 
@@ -42,6 +40,10 @@ public class ClientConnection extends Observable implements ProtocolHandler {
 
     public Board getBoard() {
         return board;
+    }
+
+    public boolean getAI() {
+        return ai;
     }
 
     public void joinGame() {
@@ -88,25 +90,35 @@ public class ClientConnection extends Observable implements ProtocolHandler {
 
             switch (protocolMessage) {
                 case Protocol.START_GAME:
+                    Mark[] marks = Mark.getMarks(args.length);
                     Player[] players = new Player[args.length];
                     for (int i = 0; i < args.length; i++) {
-                        String playerName = args[i];
-                        Mark playerMark = Mark.values()[i + 1];
-                        //players[i] = new HumanPlayer(playerMark, playerName);
-                        players[i] = new ComputerPlayer(playerMark, playerName, new SmartStrategy());
+                        // Check via username and only create computerplayer if player chose ai and username equals players name
+                        if (ai) {
+                            players[i] = new ComputerPlayer(marks[i], args[i], new SmartStrategy());
+                        } else {
+                            players[i] = new HumanPlayer(marks[i], args[i]);
+                        }
                     }
                     board = new Board(players);
                     addObserver(rolitView);
                     setChanged();
                     notifyObservers(false);
+                    rolitView.getGameLabel().setText("In game!");
                     break;
                 case Protocol.REQUEST_MOVE:
                     setChanged();
                     notifyObservers(true);
                     if (board.getPlayers()[current] instanceof ComputerPlayer) {
+                        /*try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }*/
                         int[] coordinates = board.getCoordinates(board.getPlayers()[current].determineMove(board));
                         rolitView.getClientConnection().makeMove(coordinates[0], coordinates[1]);
                     }
+                    rolitView.getGameLabel().setText("It is your turn!");
                     break;
                 case Protocol.BROADCAST_MOVE:
                     putMark(Integer.parseInt(args[0]), board.getPlayers()[current].getMark());
@@ -114,6 +126,7 @@ public class ClientConnection extends Observable implements ProtocolHandler {
                     current = current % board.getPlayers().length;
                     setChanged();
                     notifyObservers(false);
+                    rolitView.getGameLabel().setText("It is " + board.getPlayers()[current].getMark() + "'s turn!");
                     break;
                 case Protocol.GAME_OVER:
                     setChanged();
@@ -122,6 +135,7 @@ public class ClientConnection extends Observable implements ProtocolHandler {
                     rolitView.closeProtocol();
                     peer.send(Protocol.EXIT);
                     peer.shutDown();
+                    rolitView.getGameLabel().setText("Game over! " + board.getWinner().toString() + " has won.");
                     break;
             }
         }

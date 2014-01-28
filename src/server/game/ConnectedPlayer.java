@@ -1,19 +1,16 @@
 package server.game;
 
 import server.ServerPeer;
-
-import java.net.Socket;
+import util.Mark;
 
 public class ConnectedPlayer {
     private String name;
     private Mark mark;
-    private Socket socket;
     private ServerPeer peer;
 
-    public ConnectedPlayer(String name, Mark mark, Socket socket, ServerPeer peer) {
+    public ConnectedPlayer(String name, Mark mark, ServerPeer peer) {
         this.name = name;
         this.mark = mark;
-        this.socket = socket;
         this.peer = peer;
     }
 
@@ -23,10 +20,6 @@ public class ConnectedPlayer {
 
     public Mark getMark() {
         return mark;
-    }
-
-    public Socket getSocket() {
-        return socket;
     }
 
     public ServerPeer getPeer() {

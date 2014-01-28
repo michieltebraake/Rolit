@@ -1,5 +1,7 @@
 package server.game;
 
+import util.Mark;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -154,7 +156,7 @@ public class Board {
      */
     public List<Integer> getRollFields(Mark mark, int x, int y) {
         List<Integer> rollFields = new ArrayList<>();
-        for (int i = 0; i < DIM; i++) {
+        for (int i = 0; i < 8; i++) {
             List<Integer> fieldsToAdd = getRollFields(mark, x, y, xMoves[i], yMoves[i]);
             if (fieldsToAdd != null) {
                 rollFields.addAll(fieldsToAdd);
@@ -188,7 +190,7 @@ public class Board {
     }
 
     private boolean canFormLineFrom(Mark mark, int x, int y) {
-        for (int i = 0; i < DIM; i++) {
+        for (int i = 0; i < 8; i++) {
             if (canFormLineFrom(mark, x, y, xMoves[i], yMoves[i])) {
                 return true;
             }
@@ -220,7 +222,7 @@ public class Board {
     }
 
     private boolean hasMark(Mark mark) {
-        for (int i = 0; i < 64; i++) {
+        for (int i = 0; i < Board.DIM * Board.DIM; i++) {
             if (getField(i) == mark) {
                 return true;
             }
@@ -240,7 +242,7 @@ public class Board {
     }
 
     public boolean nextToBall(int x, int y) {
-        for (int i = 0; i < DIM; i++) {
+        for (int i = 0; i < 8; i++) {
             if (validLocation(x + xMoves[i], y + yMoves[i]) && getField(x + xMoves[i], y + yMoves[i]) != Mark.EMPTY) {
                 return true;
             }
