@@ -1,6 +1,5 @@
 package client.GUI;
 
-import client.Board;
 import client.Connection.ClientConnection;
 import client.Mark;
 
@@ -24,7 +23,6 @@ public class RolitView extends JFrame implements Observer {
     private JMenuItem exitItem;
     private JMenuItem restartItem;
 
-    private Board board;
     private ClientConnection clientConnection;
 
     public static void main(String[] args) {
@@ -38,15 +36,6 @@ public class RolitView extends JFrame implements Observer {
     public RolitView() {
         buttonListener = new ButtonListener(this);
         setupFrame();
-    }
-
-    public void setBoard(Board board) {
-        this.board = board;
-        buttonListener.setBoard(board);
-    }
-
-    public void setClientConnection(ClientConnection clientConnection) {
-        this.clientConnection = clientConnection;
     }
 
     /**
@@ -77,8 +66,12 @@ public class RolitView extends JFrame implements Observer {
         return clientConnection;
     }
 
-    public void setupProtocol(Socket socket) {
-        clientConnection = new ClientConnection(socket, this);
+    public void setupProtocol(Socket socket, String username, String password, boolean ai) {
+        clientConnection = new ClientConnection(socket, this, username, password, ai);
+    }
+
+    public void closeProtocol() {
+        clientConnection = null;
     }
 
     /**
@@ -135,16 +128,19 @@ public class RolitView extends JFrame implements Observer {
      */
     @Override
     public void update(Observable observable, Object arg) {
-        for (int i = 0; i < buttons.length; i++) {
-            Mark mark = board.getField(i);
-            buttons[i].setBackground(mark.getColor());
-            if (arg == false) {
-                buttons[i].setEnabled(false);
-            } else {
-                if (mark != Mark.EMPTY) {
+        if (observable instanceof ClientConnection) {
+            ClientConnection clientConnection = (ClientConnection) observable;
+            for (int i = 0; i < buttons.length; i++) {
+                Mark mark = clientConnection.getBoard().getField(i);
+                buttons[i].setBackground(mark.getColor());
+                if (arg == false) {
                     buttons[i].setEnabled(false);
                 } else {
-                    buttons[i].setEnabled(true);
+                    if (mark != Mark.EMPTY) {
+                        buttons[i].setEnabled(false);
+                    } else {
+                        buttons[i].setEnabled(true);
+                    }
                 }
             }
         }

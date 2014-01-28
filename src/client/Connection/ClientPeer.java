@@ -20,6 +20,8 @@ public class ClientPeer implements Runnable {
 
     private ProtocolHandler protocolHandler;
 
+    private boolean keepGoing = true;
+
 	/*@
        requires (nameArg != null) && (sockArg != null);
 	 */
@@ -41,7 +43,7 @@ public class ClientPeer implements Runnable {
      * Reads strings of the stream of the socket-connection and writes the characters to the default output
      */
     public void run() {
-        while (true) {
+        while (keepGoing) {
             try {
                 String message = inStream.readLine();
                 System.out.println("Received: " + message);
@@ -84,7 +86,9 @@ public class ClientPeer implements Runnable {
      * Closes the connection, the sockets will be terminated
      */
     public void shutDown() {
+        System.out.println("Closing socket!");
         try {
+            keepGoing = false;
             inStream.close();
             outStream.close();
             socket.close();

@@ -1,6 +1,6 @@
 package server.game;
 
-import server.Protocol;
+import util.Protocol;
 import server.ServerPeer;
 
 public class ServerConnection {
@@ -32,6 +32,10 @@ public class ServerConnection {
         peer.send(Protocol.BROADCAST_MOVE + " " + field);
     }
 
+    public void gameOver() {
+        peer.send(Protocol.GAME_OVER);
+    }
+
     public void handleMessage(String message) {
         String[] messageSplit = message.split(" ");
         if (messageSplit.length > 0) {
@@ -47,6 +51,9 @@ public class ServerConnection {
                 case Protocol.MAKE_MOVE:
                     int field = Integer.parseInt(args[0]);
                     game.takeTurn(field);
+                    break;
+                case Protocol.EXIT:
+                    peer.shutDown();
                     break;
             }
         }

@@ -1,7 +1,5 @@
 package client.GUI;
 
-import client.Board;
-
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -14,14 +12,9 @@ import java.awt.event.WindowEvent;
 
 public class ButtonListener implements ActionListener {
     private RolitView rolitView;
-    private Board board;
 
     public ButtonListener(RolitView rolitView) {
         this.rolitView = rolitView;
-    }
-
-    public void setBoard(Board board) {
-        this.board = board;
     }
 
     @Override
@@ -37,7 +30,7 @@ public class ButtonListener implements ActionListener {
         JButton[] buttons = rolitView.getButtons();
         for (int i = 0; i < buttons.length; i++) {
             if (buttons[i].equals(event.getSource())) {
-                int[] coordinates = board.getCoordinates(i);
+                int[] coordinates = rolitView.getClientConnection().getBoard().getCoordinates(i);
                 rolitView.getClientConnection().makeMove(coordinates[0], coordinates[1]);
             }
         }

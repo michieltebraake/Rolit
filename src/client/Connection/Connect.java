@@ -10,17 +10,25 @@ public class Connect extends Thread {
     private String ip;
     private int port;
 
-    public Connect(RolitView rolitView, String ip, int port) {
+    private String username;
+    private String password;
+    private boolean ai;
+
+    public Connect(RolitView rolitView, String ip, int port, String username, String password, boolean ai) {
         this.rolitView = rolitView;
         this.ip = ip;
         this.port = port;
+
+        this.username = username;
+        this.password = password;
+        this.ai = ai;
     }
 
     public void run() {
         Socket socket;
         try {
             socket = new Socket(ip, port);
-            rolitView.setupProtocol(socket);
+            rolitView.setupProtocol(socket, username, password, ai);
         } catch (IOException e) {
             e.printStackTrace();
         }

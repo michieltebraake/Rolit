@@ -1,8 +1,5 @@
 package server.game;
 
-import client.GUI.RolitView;
-
-import javax.swing.*;
 import java.util.List;
 import java.util.Observable;
 
@@ -13,7 +10,6 @@ import java.util.Observable;
 
 public class Game extends Observable {
     private Board board;
-    private RolitView rolitView;
 
     private int current = 0;
 
@@ -25,9 +21,6 @@ public class Game extends Observable {
             player.getPeer().getServerConnection().startGame(players);
         }
         players[current].getPeer().getServerConnection().requestMove();
-
-        //rolitView = new RolitView(this);
-        //this.addObserver(rolitView);
 
         setChanged();
         notifyObservers();
@@ -106,12 +99,15 @@ public class Game extends Observable {
         for (ConnectedPlayer player : players) {
             player.getPeer().getServerConnection().broadcastMove(field);
         }
-        //Request move from next client.
-        players[current].getPeer().getServerConnection().requestMove();
 
         if (board.isFull()) {
-            //TODO Send game end via protocol
-            JOptionPane.showMessageDialog(rolitView, board.getWinner().toString() + " has won the game!", "Game over!", JOptionPane.INFORMATION_MESSAGE);
+            //Send game over to all clients.
+            for (ConnectedPlayer player : players) {
+                player.getPeer().getServerConnection().gameOver();
+            }
+        } else {
+            //Request move from next client.
+            players[current].getPeer().getServerConnection().requestMove();
         }
     }
 }

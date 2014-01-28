@@ -1,6 +1,7 @@
 package server;
 
 import server.game.ServerConnection;
+import util.Protocol;
 
 import java.io.*;
 import java.net.Socket;
@@ -20,6 +21,8 @@ public class ServerPeer implements Runnable {
 
     private ServerConnection serverConnection;
 
+    private boolean keepGoing = true;
+
 	/*@
        requires (nameArg != null) && (sockArg != null);
 	 */
@@ -36,6 +39,8 @@ public class ServerPeer implements Runnable {
         outStream = new BufferedWriter(new OutputStreamWriter(this.socket.getOutputStream()));
 
         serverConnection = new ServerConnection(this);
+
+        System.out.println("Created socket!");
     }
 
     public ServerConnection getServerConnection() {
@@ -46,7 +51,7 @@ public class ServerPeer implements Runnable {
      * Reads strings of the stream of the socket-connection and writes the characters to the default output
      */
     public void run() {
-        while (true) {
+        while (keepGoing) {
             try {
                 String message = inStream.readLine();
                 System.out.println(message);
@@ -88,7 +93,9 @@ public class ServerPeer implements Runnable {
      * Closes the connection, the sockets will be terminated
      */
     public void shutDown() {
+        System.out.println("Closing socket!");
         try {
+            keepGoing = false;
             inStream.close();
             outStream.close();
             socket.close();

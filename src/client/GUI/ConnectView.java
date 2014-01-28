@@ -44,7 +44,7 @@ public class ConnectView extends JFrame implements ActionListener{
 
         JLabel ipLabel = new JLabel("IP:", JLabel.TRAILING);
         springPanel.add(ipLabel);
-        ipText = new JTextField(20);
+        ipText = new JTextField("localhost", 20);
         ipLabel.setLabelFor(ipText);
         springPanel.add(ipText);
 
@@ -81,7 +81,7 @@ public class ConnectView extends JFrame implements ActionListener{
                     return;
                 }
 
-                Connect connect = new Connect(rolitView, ipText.getText(), port);
+                Connect connect = new Connect(rolitView, ipText.getText(), port, usernameText.getText(), passwordText.getText(), aiBox.isSelected());
                 connect.start();
                 this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
             }
