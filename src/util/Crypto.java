@@ -1,10 +1,6 @@
 package util;
 
-
-import com.sun.org.apache.xml.internal.security.exceptions.Base64DecodingException;
-import com.sun.org.apache.xml.internal.security.utils.Base64;
-
-
+import javax.xml.bind.DatatypeConverter;
 import java.math.BigInteger;
 import java.security.*;
 import java.security.spec.InvalidKeySpecException;
@@ -15,30 +11,27 @@ public class Crypto {
 
     /**
      * Decodes a base64 string to bytes.
+     *
      * @param message base64 string in plain text
      * @return decoded base64 string
      */
     public static byte[] decodeBase64(String message) {
-        byte[] bytes = null;
-        try {
-            bytes = Base64.decode(message);
-        } catch (Base64DecodingException e) {
-            e.printStackTrace();
-        }
-        return bytes;
+        return DatatypeConverter.parseBase64Binary(message);
     }
 
     /**
      * Encodes a byte array to a base64 string.
+     *
      * @param bytes byte array to be encoded
      * @return base64 string
      */
     public static String encodeBase64(byte[] bytes) {
-        return Base64.encode(bytes);
+        return DatatypeConverter.printBase64Binary(bytes);
     }
 
     /**
      * Generates a PrivateKey Object out of raw byte[] material.
+     *
      * @param rawKey byte array containing the privatekey.
      * @return PrivateKey object
      */
@@ -58,6 +51,7 @@ public class Crypto {
 
     /**
      * Generates a PubliceKey Object out of raw byte[] material.
+     *
      * @param rawKey byte array containing the publickey.
      * @return PublicKey object
      */
@@ -78,12 +72,13 @@ public class Crypto {
 
     /**
      * Signs a message with a PrivateKey.
-     * @param message the message to be signed
+     *
+     * @param message    the message to be signed
      * @param privateKey the Privatekey to be used
      * @return signature message
      */
     public static byte[] signMessage(String message, PrivateKey privateKey) {
-        Signature sig = null;
+        Signature sig;
         byte[] signature = null;
         try {
             sig = Signature.getInstance("SHA1withRSA");
@@ -98,12 +93,13 @@ public class Crypto {
 
     /**
      * Checks if a message encrypts to a pre-defined encrypted message (signature).
+     *
      * @param signature the message signed with a PrivateKey
-     * @param message the message in plain text
+     * @param message   the message in plain text
      * @param publicKey the PublicKey to sign the plain text message with
      * @return true if the message signs to the given signature using the Publickey. returns false otherwise.
      */
-    public static boolean verifyMessage(byte[] signature, String message, PublicKey publicKey) {
+    public static boolean verifyToken(byte[] signature, String message, PublicKey publicKey) {
         Boolean check = false;
         try {
             Signature sig = Signature.getInstance("SHA1withRSA");
@@ -119,10 +115,11 @@ public class Crypto {
 
     /**
      * Generates a SecureRandom String
+     *
      * @return SecureRandom String
      */
-    public static String generateToken(){
+    public static String generateToken() {
         SecureRandom secureRandom = new SecureRandom();
-        return new BigInteger(200,secureRandom).toString(30);
+        return new BigInteger(200, secureRandom).toString(32);
     }
 }
