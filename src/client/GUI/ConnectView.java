@@ -12,7 +12,7 @@ import java.awt.event.WindowEvent;
 import java.net.Socket;
 import java.security.PrivateKey;
 
-public class ConnectView extends JFrame implements ActionListener{
+public class ConnectView extends JFrame implements ActionListener {
     private RolitView rolitView;
 
     private JButton connectButton;
@@ -21,6 +21,7 @@ public class ConnectView extends JFrame implements ActionListener{
     private JTextField ipText;
     private JTextField portText;
     private JCheckBox aiBox;
+    private JComboBox<Integer> jComboBox;
     private int port;
     public final static String AUTH_SERVER = "130.89.163.155";
     public final static int AUTH_PORT = 2013;
@@ -67,8 +68,15 @@ public class ConnectView extends JFrame implements ActionListener{
         aiLabel.setLabelFor(aiBox);
         springPanel.add(aiBox);
 
+        JLabel comboBoxLabel = new JLabel("Players:", JLabel.TRAILING);
+        springPanel.add(comboBoxLabel);
+        Integer[] options = {2, 3, 4};
+        jComboBox = new JComboBox<>(options);
+        comboBoxLabel.setLabelFor(jComboBox);
+        springPanel.add(jComboBox);
+
         //Adjust constraints for the label so it's at (5,5).
-        SpringUtilities.makeGrid(springPanel, 5, 2, 5, 5, 5, 5);
+        SpringUtilities.makeGrid(springPanel, 6, 2, 5, 5, 5, 5);
 
         add(springPanel, BorderLayout.CENTER);
 
@@ -78,8 +86,8 @@ public class ConnectView extends JFrame implements ActionListener{
 
     @Override
     public void actionPerformed(ActionEvent event) {
-        if(event.getSource() == connectButton) {
-            if(!usernameText.getText().isEmpty() && !passwordText.getText().isEmpty() && !ipText.getText().isEmpty() && !portText.getText().isEmpty()) {
+        if (event.getSource() == connectButton) {
+            if (!usernameText.getText().isEmpty() && !passwordText.getText().isEmpty() && !ipText.getText().isEmpty() && !portText.getText().isEmpty()) {
                 try {
                     port = Integer.parseInt(portText.getText());
                 } catch (NumberFormatException e) {
@@ -94,15 +102,15 @@ public class ConnectView extends JFrame implements ActionListener{
             }
         }
     }
+
     public void setupAuthentication(Socket clientSocket) {
-        new AuthenticationConnection(clientSocket, this, usernameText.getText(), passwordText.getText());
+        new AuthenticationConnection(clientSocket, this, "player_" + usernameText.getText(), passwordText.getText());
         System.out.println("AuthenticationConnection");
     }
 
-    public void createClientConnection(PrivateKey privateKey){
-        Connect connect = new Connect(rolitView, ipText.getText(), port, usernameText.getText(), aiBox.isSelected(), privateKey);
+    public void createClientConnection(PrivateKey privateKey) {
+        Connect connect = new Connect(rolitView, ipText.getText(), port, "player_" + usernameText.getText(), aiBox.isSelected(), (int) jComboBox.getSelectedItem(), privateKey);
         connect.start();
         rolitView.getStatusLabel().setText("Connecting to " + ipText.getText() + ":" + port + "...");
-
     }
 }

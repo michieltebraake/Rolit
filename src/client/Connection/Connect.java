@@ -12,14 +12,16 @@ public class Connect extends Thread {
     private int port;
     private String username;
     private boolean ai;
+    private int players;
     private PrivateKey privateKey;
 
-    public Connect(RolitView rolitView, String ip, int port, String username, boolean ai, PrivateKey privateKey) {
+    public Connect(RolitView rolitView, String ip, int port, String username, boolean ai, int players, PrivateKey privateKey) {
         this.rolitView = rolitView;
         this.ip = ip;
         this.port = port;
         this.username = username;
         this.ai = ai;
+        this.players = players;
         this.privateKey = privateKey;
     }
 
@@ -27,7 +29,7 @@ public class Connect extends Thread {
         Socket socket;
         try {
             socket = new Socket(ip, port);
-            rolitView.setupProtocol(socket, username, ai, privateKey);
+            rolitView.setupProtocol(socket, username, ai, players, privateKey);
         } catch (IOException e) {
             e.printStackTrace();
         }

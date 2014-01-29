@@ -16,8 +16,8 @@ public class Board {
     private Mark[] fields;
     private Player[] players;
 
-    private final static int[] xMoves = new int[]{0, 1, 1, 1, 0, -1, -1, -1};
-    private final static int[] yMoves = new int[]{1, 1, 0, -1, -1, -1, 0, 1};
+    public final static int[] xMoves = new int[]{0, 1, 1, 1, 0, -1, -1, -1};
+    public final static int[] yMoves = new int[]{1, 1, 0, -1, -1, -1, 0, 1};
 
     /**
      * Constructs a board.
@@ -189,7 +189,7 @@ public class Board {
         return foundOwnMark ? otherMarkFields : null;
     }
 
-    private boolean canFormLineFrom(Mark mark, int x, int y) {
+    public boolean canFormLineFrom(Mark mark, int x, int y) {
         for (int i = 0; i < 8; i++) {
             if (canFormLineFrom(mark, x, y, xMoves[i], yMoves[i])) {
                 return true;

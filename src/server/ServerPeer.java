@@ -19,6 +19,7 @@ public class ServerPeer implements Runnable {
     protected BufferedReader inStream;
     protected BufferedWriter outStream;
 
+    private RolitServer rolitServer;
     private ServerConnection serverConnection;
 
     private boolean keepGoing = true;
@@ -32,13 +33,14 @@ public class ServerPeer implements Runnable {
      *
      * @param socket Socket of the Peer-proces
      */
-    public ServerPeer(Socket socket) throws IOException {
+    public ServerPeer(Socket socket, RolitServer rolitServer) throws IOException {
         this.socket = socket;
+        this.rolitServer = rolitServer;
 
         inStream = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
         outStream = new BufferedWriter(new OutputStreamWriter(this.socket.getOutputStream()));
 
-        serverConnection = new ServerConnection(this);
+        serverConnection = new ServerConnection(this, rolitServer);
 
         System.out.println("Created socket!");
     }
@@ -63,6 +65,7 @@ public class ServerPeer implements Runnable {
     }
 
     public void send(String message) {
+        System.out.println("Sending: " + message);
         try {
             outStream.write(message + "\n");
             outStream.flush();
@@ -95,6 +98,10 @@ public class ServerPeer implements Runnable {
     public void shutDown() {
         System.out.println("Closing socket!");
         try {
+            //Make sure server doesn't expect client to keep playing.
+            rolitServer.removeConnection(this);
+            rolitServer.removeAuthenticated(this);
+
             keepGoing = false;
             inStream.close();
             outStream.close();

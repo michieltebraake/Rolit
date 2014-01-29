@@ -1,7 +1,10 @@
 package client.Connection;
 
-import client.*;
+import client.Board;
+import client.ComputerPlayer;
 import client.GUI.RolitView;
+import client.HumanPlayer;
+import client.Player;
 import client.Strategy.SmartStrategy;
 import util.Crypto;
 import util.Mark;
@@ -20,14 +23,20 @@ public class ClientConnection extends Observable implements ProtocolHandler {
     private Board board;
     private RolitView rolitView;
     private int current = 0;
+
     private String username;
     private boolean ai;
+    private int players;
+
     private PrivateKey privateKey;
 
-    public ClientConnection(Socket socket, RolitView rolitView, String username, boolean ai, PrivateKey privateKey) {
+    public ClientConnection(Socket socket, RolitView rolitView, String username, boolean ai, int players, PrivateKey privateKey) {
         this.rolitView = rolitView;
+
         this.username = username;
         this.ai = ai;
+        this.players = players;
+
         this.privateKey = privateKey;
         try {
             peer = new ClientPeer(socket, this);
@@ -49,10 +58,6 @@ public class ClientConnection extends Observable implements ProtocolHandler {
 
     public void authenticate() {
         peer.send(Protocol.AUTHENTICATE_CLIENT + " " + username);
-    }
-
-    public void joinGame() {
-        peer.send(Protocol.JOIN_GAME + " " + 3);
     }
 
     public void makeMove(int x, int y) {
@@ -102,6 +107,7 @@ public class ClientConnection extends Observable implements ProtocolHandler {
                     break;
                 case Protocol.AUTHENTICATED:
                     System.out.println("Yay! it works.");
+                    peer.send(Protocol.JOIN_GAME + " " + players);
                     //TODO ================ Client authenticated ================
                     break;
                 case Protocol.START_GAME:
@@ -125,12 +131,8 @@ public class ClientConnection extends Observable implements ProtocolHandler {
                     setChanged();
                     notifyObservers(true);
                     if (board.getPlayers()[current] instanceof ComputerPlayer) {
-                        /*try {
-                            Thread.sleep(1000);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }*/
                         int[] coordinates = board.getCoordinates(board.getPlayers()[current].determineMove(board));
+                        System.out.println(coordinates[0] + "," + coordinates[1]);
                         rolitView.getClientConnection().makeMove(coordinates[0], coordinates[1]);
                     }
                     rolitView.getGameLabel().setText("It is your turn!");

@@ -46,8 +46,10 @@ public class ClientPeer implements Runnable {
         while (keepGoing) {
             try {
                 String message = inStream.readLine();
-                System.out.println("Received: " + message);
-                protocolHandler.handleMessage(message);
+                if (message != null) {
+                    System.out.println("Received: " + message);
+                    protocolHandler.handleMessage(message);
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }

@@ -29,6 +29,10 @@ public class RolitView extends JFrame implements Observer {
     private JLabel statusLabel;
     private JLabel gameLabel;
 
+    private JMenuItem showPossibleMoves;
+    private JMenuItem makeAIMove;
+    private JMenuItem switchToAI;
+
     private ClientConnection clientConnection;
 
     public static void main(String[] args) {
@@ -80,9 +84,9 @@ public class RolitView extends JFrame implements Observer {
         return clientConnection;
     }
 
-    public void setupProtocol(Socket socket, String username, boolean ai, PrivateKey privateKey) {
+    public void setupProtocol(Socket socket, String username, boolean ai, int players, PrivateKey privateKey) {
         statusLabel.setText("Connected!");
-        clientConnection = new ClientConnection(socket, this, username, ai, privateKey);
+        clientConnection = new ClientConnection(socket, this, username, ai, players, privateKey);
     }
 
     public void closeProtocol() {
@@ -126,7 +130,20 @@ public class RolitView extends JFrame implements Observer {
         exitItem.addActionListener(buttonListener);
         file.add(exitItem);
 
+
+        JMenu cheats = new JMenu("Cheats");
+        showPossibleMoves = new JMenuItem("Show possible moves");
+        showPossibleMoves.addActionListener(buttonListener);
+        cheats.add(showPossibleMoves);
+        makeAIMove = new JMenuItem("Make AI move");
+        makeAIMove.addActionListener(buttonListener);
+        cheats.add(makeAIMove);
+        switchToAI = new JMenuItem("Switch to AI");
+        switchToAI.addActionListener(buttonListener);
+        cheats.add(switchToAI);
+
         menuBar.add(file);
+        menuBar.add(cheats);
 
         //Add status bar at the bottom
         JPanel statusPanel = new JPanel();

@@ -1,5 +1,6 @@
 package server.game;
 
+import server.RolitServer;
 import util.Crypto;
 import util.Protocol;
 import server.ServerPeer;
@@ -9,7 +10,9 @@ import java.net.Socket;
 import java.security.PublicKey;
 
 public class ServerConnection {
+    private RolitServer rolitServer;
     private ServerPeer peer;
+
     private Game game;
     public final static String AUTH_SERVER = "130.89.163.155";
     public final static int AUTH_PORT = 2013;
@@ -17,8 +20,15 @@ public class ServerConnection {
     private PublicKey publicKey;
     private String plainToken;
 
-    public ServerConnection(ServerPeer peer) {
+    private String username;
+
+    public ServerConnection(ServerPeer peer, RolitServer rolitServer) {
         this.peer = peer;
+        this.rolitServer = rolitServer;
+    }
+
+    public String getUsername() {
+        return username;
     }
 
     public void setGame(Game game) {
@@ -30,15 +40,14 @@ public class ServerConnection {
     }
 
     public void requestToken() {
-        //plainToken = Crypto.generateToken();
-        plainToken = "crack";
+        plainToken = Crypto.generateToken();
         peer.send(Protocol.TOKEN_REQUEST + " " + plainToken);
-
     }
 
     public void startGame(ConnectedPlayer[] players) {
         StringBuilder message = new StringBuilder();
         for (ConnectedPlayer player : players) {
+            System.out.println(player.getName());
             message.append(player.getName());
             message.append(" ");
         }
@@ -71,12 +80,17 @@ public class ServerConnection {
             switch (protocolMessage) {
                 case Protocol.AUTHENTICATE_CLIENT:
                     try {
-                        String username = args[0];
-                        Socket socket = new Socket(AUTH_SERVER, AUTH_PORT);
-                        AuthenticationPeer authenticationPeer = new AuthenticationPeer(socket, this);
-                        Thread thread = new Thread(authenticationPeer);
-                        thread.start();
-                        authenticationPeer.send("PUBLICKEY " + username);
+                        username = args[0];
+                        if (!rolitServer.isConnected(username)) {
+                            Socket socket = new Socket(AUTH_SERVER, AUTH_PORT);
+                            AuthenticationPeer authenticationPeer = new AuthenticationPeer(socket, this);
+                            Thread thread = new Thread(authenticationPeer);
+                            thread.start();
+                            authenticationPeer.send("PUBLICKEY " + username);
+                        } else {
+                            peer.send(Protocol.ERROR + " User is already connected! Disconnecting client.");
+                            peer.shutDown();
+                        }
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -84,6 +98,7 @@ public class ServerConnection {
                 case Protocol.TOKEN_REPLY:
                     if (Crypto.verifyToken(Crypto.decodeBase64(args[0]), plainToken, publicKey)) {
                         peer.send(Protocol.AUTHENTICATED + " 0 0");
+                        rolitServer.removeConnection(peer);
                         //TODO ================ Client Authenticated ================
                         //wait for joingame?
                     } else {
@@ -92,6 +107,9 @@ public class ServerConnection {
                         peer.shutDown();
                     }
                     System.out.println("========> Received base64: " + args[0]);
+                    break;
+                case Protocol.JOIN_GAME:
+                    rolitServer.joinWaitlist(peer, Integer.parseInt(args[0]));
                     break;
                 case Protocol.MAKE_MOVE:
                     int field = Integer.parseInt(args[0]);
