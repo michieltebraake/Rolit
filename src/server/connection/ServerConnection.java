@@ -1,24 +1,32 @@
-package server.game;
+package server.connection;
 
+import server.game.ConnectedPlayer;
+import server.game.Game;
 import util.Crypto;
 import util.Protocol;
-import server.ServerPeer;
+import util.ProtocolHandler;
+import util.Peer.ServerPeer;
 
 import java.io.IOException;
 import java.net.Socket;
 import java.security.PublicKey;
 
-public class ServerConnection {
+public class ServerConnection implements ProtocolHandler {
     private ServerPeer peer;
     private Game game;
-    public final static String AUTH_SERVER = "130.89.163.155";
-    public final static int AUTH_PORT = 2013;
-
+    private String name;
     private PublicKey publicKey;
     private String plainToken;
 
-    public ServerConnection(ServerPeer peer) {
-        this.peer = peer;
+    public ServerConnection(Socket socket, String name) {
+        this.name = "Client No. " + name;
+        try {
+            peer = new ServerPeer(socket, this, this.name);
+            Thread thread = new Thread(peer);
+            thread.start();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void setGame(Game game) {
@@ -30,8 +38,7 @@ public class ServerConnection {
     }
 
     public void requestToken() {
-        //plainToken = Crypto.generateToken();
-        plainToken = "crack";
+        plainToken = Crypto.generateToken();
         peer.send(Protocol.TOKEN_REQUEST + " " + plainToken);
 
     }
@@ -70,16 +77,8 @@ public class ServerConnection {
 
             switch (protocolMessage) {
                 case Protocol.AUTHENTICATE_CLIENT:
-                    try {
-                        String username = args[0];
-                        Socket socket = new Socket(AUTH_SERVER, AUTH_PORT);
-                        AuthenticationPeer authenticationPeer = new AuthenticationPeer(socket, this);
-                        Thread thread = new Thread(authenticationPeer);
-                        thread.start();
-                        authenticationPeer.send("PUBLICKEY " + username);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                    String username = args[0];
+                    AuthenticationConnection authenticationConnection = new AuthenticationConnection(this, username, name);
                     break;
                 case Protocol.TOKEN_REPLY:
                     if (Crypto.verifyToken(Crypto.decodeBase64(args[0]), plainToken, publicKey)) {

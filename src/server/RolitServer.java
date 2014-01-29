@@ -1,8 +1,7 @@
 package server;
 
 import server.game.ConnectedPlayer;
-import server.game.Game;
-import util.Mark;
+import server.connection.ServerConnection;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -25,6 +24,7 @@ public class RolitServer {
 
     private void start() {
         ServerSocket serverSocket = null;
+        int clientNo = 1;
         try {
             serverSocket = new ServerSocket(2727);
         } catch (IOException e) {
@@ -33,11 +33,9 @@ public class RolitServer {
         while (true) {
             try {
                 Socket clientSocket = serverSocket.accept();
-                ServerPeer peer = new ServerPeer(clientSocket);
-                Thread thread = new Thread(peer);
-                thread.start();
-
-
+                ServerConnection serverConnection = new ServerConnection(clientSocket, String.valueOf(clientNo));
+                clientNo++;
+/*
                 connections.add(peer);
 
 

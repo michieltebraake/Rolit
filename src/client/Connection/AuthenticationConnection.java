@@ -2,6 +2,7 @@ package client.Connection;
 
 import client.GUI.ConnectView;
 import util.Crypto;
+import util.Peer.Peer;
 import util.ProtocolHandler;
 
 import java.io.IOException;
@@ -9,7 +10,7 @@ import java.net.Socket;
 import java.security.PrivateKey;
 
 public class AuthenticationConnection implements ProtocolHandler {
-    private ClientPeer peer;
+    private Peer peer;
     private ConnectView connectView;
     private PrivateKey privateKey;
 
@@ -17,20 +18,17 @@ public class AuthenticationConnection implements ProtocolHandler {
     public AuthenticationConnection(Socket socket, ConnectView connectView, String username, String password) {
         this.connectView = connectView;
         try {
-            peer = new ClientPeer(socket, this);
+            peer = new Peer(socket, this, "Authentication");
         } catch (IOException e) {
             e.printStackTrace();
         }
         Thread thread = new Thread(peer);
         thread.start();
         peer.send("IDPLAYER " + username + " " + password);
-        System.out.println("send message IDPLAYER");
-
     }
 
 
     public void handleMessage(String message) {
-        System.out.println(message);
         String[] messageSplit = message.split(" ");
         if (messageSplit.length > 0) {
 

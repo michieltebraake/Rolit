@@ -1,6 +1,6 @@
 package server;
 
-import server.game.ServerConnection;
+import server.connection.ServerConnection;
 import util.Protocol;
 
 import java.io.*;
@@ -38,7 +38,7 @@ public class ServerPeer implements Runnable {
         inStream = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
         outStream = new BufferedWriter(new OutputStreamWriter(this.socket.getOutputStream()));
 
-        serverConnection = new ServerConnection(this);
+        //serverConnection = new ServerConnection(this);
 
         System.out.println("Created socket!");
     }
