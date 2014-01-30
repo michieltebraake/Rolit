@@ -1,34 +1,34 @@
-package server.game;
+package server.connection;
 
-import server.RolitServer;
+
+import server.game.ConnectedPlayer;
+import server.game.Game;
 import util.Crypto;
+import util.Peer.ServerPeer;
 import util.Protocol;
-import server.ServerPeer;
+import util.ProtocolHandler;
 
 import java.io.IOException;
 import java.net.Socket;
 import java.security.PublicKey;
 
-public class ServerConnection {
-    private RolitServer rolitServer;
+public class ServerConnection implements ProtocolHandler {
     private ServerPeer peer;
 
     private Game game;
-    public final static String AUTH_SERVER = "130.89.163.155";
-    public final static int AUTH_PORT = 2013;
-
+    private String name;
     private PublicKey publicKey;
     private String plainToken;
 
-    private String username;
-
-    public ServerConnection(ServerPeer peer, RolitServer rolitServer) {
-        this.peer = peer;
-        this.rolitServer = rolitServer;
-    }
-
-    public String getUsername() {
-        return username;
+    public ServerConnection(Socket socket, String name) {
+        this.name = "Client No. " + name;
+        try {
+            peer = new ServerPeer(socket, this, this.name);
+            Thread thread = new Thread(peer);
+            thread.start();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void setGame(Game game) {
@@ -79,21 +79,8 @@ public class ServerConnection {
 
             switch (protocolMessage) {
                 case Protocol.AUTHENTICATE_CLIENT:
-                    try {
-                        username = args[0];
-                        if (!rolitServer.isConnected(username)) {
-                            Socket socket = new Socket(AUTH_SERVER, AUTH_PORT);
-                            AuthenticationPeer authenticationPeer = new AuthenticationPeer(socket, this);
-                            Thread thread = new Thread(authenticationPeer);
-                            thread.start();
-                            authenticationPeer.send("PUBLICKEY " + username);
-                        } else {
-                            peer.send(Protocol.ERROR + " User is already connected! Disconnecting client.");
-                            peer.shutDown();
-                        }
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                    String username = args[0];
+                    AuthenticationConnection authenticationConnection = new AuthenticationConnection(this, username, name);
                     break;
                 case Protocol.TOKEN_REPLY:
                     if (Crypto.verifyToken(Crypto.decodeBase64(args[0]), plainToken, publicKey)) {

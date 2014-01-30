@@ -1,11 +1,9 @@
-package server.game;
+package util.Peer;
 
-import util.Crypto;
 import util.ProtocolHandler;
 
 import java.io.*;
 import java.net.Socket;
-import java.security.PublicKey;
 
 /**
  * Peer for a simple client-server application
@@ -13,15 +11,13 @@ import java.security.PublicKey;
  * @author Theo Ruys
  * @version 2005.02.21
  */
-public class AuthenticationPeer implements Runnable {
-    protected String name;
+public class Peer implements Runnable {
     protected Socket socket;
-
     protected BufferedReader inStream;
     protected BufferedWriter outStream;
-
-    private ServerConnection serverConnection;
-    private boolean keepGoing = true;
+    protected ProtocolHandler protocolHandler;
+    protected String name;
+    protected boolean keepGoing = true;
 
 	/*@
        requires (nameArg != null) && (sockArg != null);
@@ -32,12 +28,12 @@ public class AuthenticationPeer implements Runnable {
      *
      * @param socket Socket of the Peer-proces
      */
-    public AuthenticationPeer(Socket socket, ServerConnection serverConnection) throws IOException {
+    public Peer(Socket socket, ProtocolHandler protocolHandler, String name) throws IOException {
         this.socket = socket;
-        this.serverConnection = serverConnection;
+        this.protocolHandler = protocolHandler;
+        this.name = name;
         inStream = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
         outStream = new BufferedWriter(new OutputStreamWriter(this.socket.getOutputStream()));
-
     }
 
     /**
@@ -47,17 +43,17 @@ public class AuthenticationPeer implements Runnable {
         while (keepGoing) {
             try {
                 String message = inStream.readLine();
-                System.out.println("[AUTH] Received: " + message);
-                handleMessage(message);
+                System.out.println("["+ name + " | received] " + message);
+                protocolHandler.handleMessage(message);
             } catch (IOException e) {
-                e.printStackTrace();
+                shutDown();
             }
         }
     }
 
     public void send(String message) {
         try {
-            System.out.println("[AUTH] Sent: " + message);
+            System.out.println("["+ name + " | sent] " + message);
             outStream.write(message + "\n");
             outStream.flush();
         } catch (IOException e) {
@@ -83,34 +79,11 @@ public class AuthenticationPeer implements Runnable {
         }
     }
 
-    public void handleMessage(String message) {
-        String[] messageSplit = message.split(" ");
-        if (messageSplit.length > 0) {
-
-            String protocolMessage = messageSplit[0];
-            //Make a new array of arguments that doesn't contain the protocol word.
-            String args[] = new String[messageSplit.length - 1];
-            for (int i = 0; i < messageSplit.length - 1; i++) {
-                args[i] = messageSplit[i + 1];
-            }
-
-            switch (protocolMessage) {
-                case "PUBKEY":
-                    PublicKey publicKey = Crypto.decodePublicKey(Crypto.decodeBase64(args[0]));
-                    serverConnection.setPublicKey(publicKey);
-                    serverConnection.requestToken();
-                    shutDown();
-                    break;
-                //TODO: error handling
-            }
-        }
-    }
-
     /**
      * Closes the connection, the sockets will be terminated
      */
     public void shutDown() {
-        System.out.println("Closing socket!");
+        System.out.println("[" + name + "] Closing socket");
         try {
             keepGoing = false;
             inStream.close();

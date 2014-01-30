@@ -6,10 +6,8 @@ import client.GUI.RolitView;
 import client.HumanPlayer;
 import client.Player;
 import client.Strategy.SmartStrategy;
-import util.Crypto;
-import util.Mark;
-import util.Protocol;
-import util.ProtocolHandler;
+import util.*;
+import util.Peer.Peer;
 
 import javax.swing.*;
 import java.io.IOException;
@@ -19,7 +17,7 @@ import java.util.List;
 import java.util.Observable;
 
 public class ClientConnection extends Observable implements ProtocolHandler {
-    private ClientPeer peer;
+    private Peer peer;
     private Board board;
     private RolitView rolitView;
     private int current = 0;
@@ -39,7 +37,7 @@ public class ClientConnection extends Observable implements ProtocolHandler {
 
         this.privateKey = privateKey;
         try {
-            peer = new ClientPeer(socket, this);
+            peer = new Peer(socket, this, "Server");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -101,8 +99,6 @@ public class ClientConnection extends Observable implements ProtocolHandler {
             switch (protocolMessage) {
                 case Protocol.TOKEN_REQUEST:
                     String base64Token = Crypto.encodeBase64(Crypto.signMessage(args[0], privateKey));
-                    System.out.println(base64Token.contains("\n"));
-                    System.out.println("========> Sent base64: " + base64Token);
                     peer.send(Protocol.TOKEN_REPLY + " " + base64Token);
                     break;
                 case Protocol.AUTHENTICATED:
