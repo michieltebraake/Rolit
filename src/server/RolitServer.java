@@ -4,6 +4,7 @@ import server.connection.ServerConnection;
 import server.game.ConnectedPlayer;
 import server.game.Game;
 import util.Mark;
+import util.Peer.Peer;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -22,18 +23,34 @@ public class RolitServer {
     List<ServerConnection> authenticated4 = new ArrayList<>();
 
     public static void main(String[] args) {
-        System.out.println("Starting server...");
         new RolitServer().start();
     }
 
     private void start() {
+        boolean startedServer = false;
         ServerSocket serverSocket = null;
-        int clientNo = 1;
-        try {
-            serverSocket = new ServerSocket(2727);
-        } catch (IOException e) {
-            e.printStackTrace();
+        while (!startedServer) {
+            System.out.print("Port: ");
+            String portString = Peer.readString();
+
+            try {
+                int port = Integer.parseInt(portString);
+
+                try {
+                    serverSocket = new ServerSocket(port);
+                    startedServer = true;
+                } catch (IOException e) {
+                    System.out.println("Unable to create server socket! Perhaps that port is already in use?");
+                }
+
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid port number!");
+            }
         }
+
+        System.out.println("Starting server...");
+
+        int clientNo = 1;
         while (true) {
             try {
                 Socket clientSocket = serverSocket.accept();

@@ -22,6 +22,7 @@ public class ServerConnection implements ProtocolHandler {
     private String plainToken;
 
     private String username;
+    private boolean authenticated;
 
     public ServerConnection(Socket socket, RolitServer rolitServer, String name) {
         name = "Client No. " + name;
@@ -80,38 +81,49 @@ public class ServerConnection implements ProtocolHandler {
             String protocolMessage = messageSplit[0];
             //Make a new array of arguments that doesn't contain the protocol word.
             String args[] = new String[messageSplit.length - 1];
-            for (int i = 0; i < messageSplit.length - 1; i++) {
-                args[i] = messageSplit[i + 1];
-            }
 
-            switch (protocolMessage) {
-                case Protocol.AUTHENTICATE_CLIENT:
-                    username = args[0];
-                    peer.setName(username);
-                    new AuthenticationConnection(this, username);
-                    break;
-                case Protocol.TOKEN_REPLY:
-                    if (Crypto.verifyToken(Crypto.decodeBase64(args[0]), plainToken, publicKey)) {
-                        peer.send(Protocol.AUTHENTICATED + " 0 0");
-                        rolitServer.removeConnection(this);
-                        //TODO ================ Client Authenticated ================
-                        //wait for joingame?
-                    } else {
-                        //TODO false token handling.
-                        peer.send(Protocol.ERROR + " Tokenreply was not valid! Disconnecting client.");
+            System.arraycopy(messageSplit, 1, args, 0, messageSplit.length - 1);
+
+            if (!authenticated) {
+                switch (protocolMessage) {
+                    case Protocol.AUTHENTICATE_CLIENT:
+                        username = args[0];
+                        if (!rolitServer.isConnected(username)) {
+                            peer.setName(username);
+                            new AuthenticationConnection(this, username);
+                        } else {
+                            peer.send(Protocol.ERROR + " User is already connected! Disconnecting client.");
+                            peer.shutDown();
+                        }
+                        break;
+                    case Protocol.TOKEN_REPLY:
+                        if (Crypto.verifyToken(Crypto.decodeBase64(args[0]), plainToken, publicKey)) {
+                            authenticated = true;
+                            peer.send(Protocol.AUTHENTICATED + " 0 0");
+                            rolitServer.removeConnection(this);
+                        } else {
+                            peer.send(Protocol.ERROR + " Tokenreply was not valid! Disconnecting client.");
+                            peer.shutDown();
+                        }
+                        break;
+                    default:
+                        peer.send(Protocol.ERROR + " Invalid protocol message! User is not yet authenticated, disconnecting client.");
                         peer.shutDown();
-                    }
-                    break;
-                case Protocol.JOIN_GAME:
-                    rolitServer.joinWaitlist(this, Integer.parseInt(args[0]));
-                    break;
-                case Protocol.MAKE_MOVE:
-                    int field = Integer.parseInt(args[0]);
-                    game.takeTurn(field);
-                    break;
-                case Protocol.EXIT:
-                    peer.shutDown();
-                    break;
+                        break;
+                }
+            } else {
+                switch (protocolMessage) {
+                    case Protocol.JOIN_GAME:
+                        rolitServer.joinWaitlist(this, Integer.parseInt(args[0]));
+                        break;
+                    case Protocol.MAKE_MOVE:
+                        int field = Integer.parseInt(args[0]);
+                        game.takeTurn(field);
+                        break;
+                    case Protocol.EXIT:
+                        peer.shutDown();
+                        break;
+                }
             }
         }
     }
