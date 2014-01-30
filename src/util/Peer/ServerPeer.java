@@ -1,22 +1,33 @@
 package util.Peer;
 
-import util.Peer.Peer;
-import util.ProtocolHandler;
+import server.connection.ServerConnection;
+import server.game.Game;
 
 import java.io.IOException;
 import java.net.Socket;
 
 public class ServerPeer extends Peer {
+    private ServerConnection serverConnection;
+    private Game game;
 
     /**
      * Constructor. creates a peer object based inStream the given parameters.
      *
      * @param socket          Socket of the Peer-proces
-     * @param protocolHandler
+     * @param serverConnection
      * @param name
      */
-    public ServerPeer(Socket socket, ProtocolHandler protocolHandler, String name) throws IOException {
-        super(socket, protocolHandler, name);
+    public ServerPeer(Socket socket, ServerConnection serverConnection, String name) throws IOException {
+        super(socket, serverConnection, name);
+        this.serverConnection = serverConnection;
+    }
+
+    public ServerConnection getServerConnection() {
+        return  serverConnection;
+    }
+
+    public void setGame(Game game) {
+        this.game = game;
     }
 
     /**

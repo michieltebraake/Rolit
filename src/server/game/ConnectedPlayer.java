@@ -1,17 +1,17 @@
 package server.game;
 
-import server.ServerPeer;
+import server.connection.ServerConnection;
 import util.Mark;
 
 public class ConnectedPlayer {
     private String name;
     private Mark mark;
-    private ServerPeer peer;
+    private ServerConnection serverConnection;
 
-    public ConnectedPlayer(String name, Mark mark, ServerPeer peer) {
+    public ConnectedPlayer(String name, Mark mark, ServerConnection serverConnection) {
         this.name = name;
         this.mark = mark;
-        this.peer = peer;
+        this.serverConnection = serverConnection;
     }
 
     public String getName() {
@@ -22,7 +22,7 @@ public class ConnectedPlayer {
         return mark;
     }
 
-    public ServerPeer getPeer() {
-        return peer;
+    public ServerConnection getServerConnection() {
+        return serverConnection;
     }
 }

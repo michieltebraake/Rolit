@@ -1,7 +1,9 @@
 package server;
 
-import server.game.ConnectedPlayer;
 import server.connection.ServerConnection;
+import server.game.ConnectedPlayer;
+import server.game.Game;
+import util.Mark;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -13,11 +15,11 @@ import java.util.List;
  *
  */
 public class RolitServer {
-    List<ServerPeer> connections = new ArrayList<>();
+    List<ServerConnection> connections = new ArrayList<>();
 
-    List<ServerPeer> authenticated2 = new ArrayList<>();
-    List<ServerPeer> authenticated3 = new ArrayList<>();
-    List<ServerPeer> authenticated4 = new ArrayList<>();
+    List<ServerConnection> authenticated2 = new ArrayList<>();
+    List<ServerConnection> authenticated3 = new ArrayList<>();
+    List<ServerConnection> authenticated4 = new ArrayList<>();
 
     public static void main(String[] args) {
         System.out.println("Starting server...");
@@ -35,59 +37,56 @@ public class RolitServer {
         while (true) {
             try {
                 Socket clientSocket = serverSocket.accept();
-                ServerPeer peer = new ServerPeer(clientSocket, this);
-                Thread thread = new Thread(peer);
-                thread.start();
+                ServerConnection serverConnection = new ServerConnection(clientSocket, this, String.valueOf(clientNo));
 
-                ServerConnection serverConnection = new ServerConnection(clientSocket, String.valueOf(clientNo));
                 clientNo++;
-                connections.add(peer);
+                connections.add(serverConnection);
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
     }
 
-    public void removeConnection(ServerPeer serverPeer) {
-        connections.remove(serverPeer);
+    public void removeConnection(ServerConnection serverConnection) {
+        connections.remove(serverConnection);
     }
 
-    public void removeAuthenticated(ServerPeer serverPeer) {
-        authenticated2.remove(serverPeer);
-        authenticated3.remove(serverPeer);
-        authenticated4.remove(serverPeer);
+    public void removeAuthenticated(ServerConnection serverConnection) {
+        authenticated2.remove(serverConnection);
+        authenticated3.remove(serverConnection);
+        authenticated4.remove(serverConnection);
     }
 
     public boolean isConnected(String username) {
         return isConnected(username, connections) + isConnected(username, authenticated2) + isConnected(username, authenticated3) + isConnected(username, authenticated4) > 1;
     }
 
-    private int isConnected(String username, List<ServerPeer> connected) {
+    private int isConnected(String username, List<ServerConnection> connected) {
         int connections = 0;
-        for (ServerPeer serverPeer : connected) {
-            if (serverPeer.getServerConnection().getUsername().equals(username)) {
+        for (ServerConnection serverConnection : connected) {
+            if (serverConnection.getUsername().equals(username)) {
                 connections++;
             }
         }
         return connections;
     }
 
-    public void joinWaitlist(ServerPeer serverPeer, int players) {
+    public void joinWaitlist(ServerConnection serverConnection, int players) {
         switch (players) {
             case 2:
-                authenticated2.add(serverPeer);
+                authenticated2.add(serverConnection);
                 if (authenticated2.size() == 2) {
                     startGame(authenticated2);
                 }
                 break;
             case 3:
-                authenticated3.add(serverPeer);
+                authenticated3.add(serverConnection);
                 if (authenticated3.size() == 3) {
                     startGame(authenticated3);
                 }
                 break;
             case 4:
-                authenticated4.add(serverPeer);
+                authenticated4.add(serverConnection);
                 if (authenticated4.size() == 4) {
                     startGame(authenticated4);
                 }
@@ -101,17 +100,16 @@ public class RolitServer {
      *
      * @param authenticated List of players to start a game with
      */
-    private void startGame(List<ServerPeer> authenticated) {
+    private void startGame(List<ServerConnection> authenticated) {
         Mark[] marks = Mark.getMarks(authenticated.size());
         ConnectedPlayer[] players = new ConnectedPlayer[authenticated.size()];
         for (int i = 0; i < authenticated.size(); i++) {
-            System.out.println("Adding player to start list");
-            players[i] = new ConnectedPlayer(authenticated.get(i).getServerConnection().getUsername(), marks[i], authenticated.get(i));
+            players[i] = new ConnectedPlayer(authenticated.get(i).getUsername(), marks[i], authenticated.get(i));
         }
 
         Game game = new Game(players);
         for (ConnectedPlayer connectedPlayer : players) {
-            connectedPlayer.getPeer().getServerConnection().setGame(game);
+            connectedPlayer.getServerConnection().setGame(game);
         }
         authenticated.clear();
         System.out.println("Starting game!");

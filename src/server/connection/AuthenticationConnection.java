@@ -15,12 +15,12 @@ public class AuthenticationConnection implements ProtocolHandler{
     public final static String AUTH_SERVER = "130.89.163.155";
     public final static int AUTH_PORT = 2013;
 
-    public AuthenticationConnection(ServerConnection serverConnection, String username, String clientName){
+    public AuthenticationConnection(ServerConnection serverConnection, String username){
         this.serverConnection = serverConnection;
         Socket socket;
         try {
             socket = new Socket(AUTH_SERVER, AUTH_PORT);
-            peer = new Peer(socket, this, "Auth " + clientName);
+            peer = new Peer(socket, this, "Auth " + username);
             Thread thread = new Thread(peer);
             thread.start();
         } catch (IOException e) {

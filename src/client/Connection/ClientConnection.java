@@ -102,7 +102,6 @@ public class ClientConnection extends Observable implements ProtocolHandler {
                     peer.send(Protocol.TOKEN_REPLY + " " + base64Token);
                     break;
                 case Protocol.AUTHENTICATED:
-                    System.out.println("Yay! it works.");
                     peer.send(Protocol.JOIN_GAME + " " + players);
                     //TODO ================ Client authenticated ================
                     break;
@@ -128,7 +127,6 @@ public class ClientConnection extends Observable implements ProtocolHandler {
                     notifyObservers(true);
                     if (board.getPlayers()[current] instanceof ComputerPlayer) {
                         int[] coordinates = board.getCoordinates(board.getPlayers()[current].determineMove(board));
-                        System.out.println(coordinates[0] + "," + coordinates[1]);
                         rolitView.getClientConnection().makeMove(coordinates[0], coordinates[1]);
                     }
                     rolitView.getGameLabel().setText("It is your turn!");

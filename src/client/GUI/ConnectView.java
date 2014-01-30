@@ -31,6 +31,10 @@ public class ConnectView extends JFrame implements ActionListener {
         setupFrame();
     }
 
+    public RolitView getRolitView() {
+        return rolitView;
+    }
+
     private void setupFrame() {
         connectButton = new JButton("Connect");
         connectButton.addActionListener(this);

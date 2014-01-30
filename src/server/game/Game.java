@@ -20,9 +20,9 @@ public class Game extends Observable {
 
         //Start the game
         for (ConnectedPlayer player : players) {
-            player.getPeer().getServerConnection().startGame(players);
+            player.getServerConnection().startGame(players);
         }
-        players[current].getPeer().getServerConnection().requestMove();
+        players[current].getServerConnection().requestMove();
 
         setChanged();
         notifyObservers();
@@ -93,21 +93,19 @@ public class Game extends Observable {
         current++;
         current = current % players.length;
 
-        System.out.println(current);
-
         //Send move to all clients.
         for (ConnectedPlayer player : players) {
-            player.getPeer().getServerConnection().broadcastMove(field);
+            player.getServerConnection().broadcastMove(field);
         }
 
         if (board.isFull()) {
             //Send game over to all clients.
             for (ConnectedPlayer player : players) {
-                player.getPeer().getServerConnection().gameOver();
+                player.getServerConnection().gameOver();
             }
         } else {
             //Request move from next client.
-            players[current].getPeer().getServerConnection().requestMove();
+            players[current].getServerConnection().requestMove();
         }
     }
 }

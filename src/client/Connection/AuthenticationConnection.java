@@ -44,9 +44,12 @@ public class AuthenticationConnection implements ProtocolHandler {
                     connectView.createClientConnection(privateKey);
                     peer.shutDown();
                     break;
+                case "ERROR":
+                    connectView.getRolitView().getStatusLabel().setText("Authentication failed (Wrong password/username)! Not connected.");
+                    peer.shutDown();
+                    break;
                 default:
                     peer.shutDown();
-                    //TODO: GUI: wrong pass/username.
                     break;
 
             }

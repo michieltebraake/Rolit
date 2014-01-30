@@ -36,6 +36,10 @@ public class Peer implements Runnable {
         outStream = new BufferedWriter(new OutputStreamWriter(this.socket.getOutputStream()));
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     /**
      * Reads strings of the stream of the socket-connection and writes the characters to the default output
      */

@@ -1,6 +1,7 @@
 package server.connection;
 
 
+import server.RolitServer;
 import server.game.ConnectedPlayer;
 import server.game.Game;
 import util.Crypto;
@@ -14,21 +15,28 @@ import java.security.PublicKey;
 
 public class ServerConnection implements ProtocolHandler {
     private ServerPeer peer;
+    private RolitServer rolitServer;
 
     private Game game;
-    private String name;
     private PublicKey publicKey;
     private String plainToken;
 
-    public ServerConnection(Socket socket, String name) {
-        this.name = "Client No. " + name;
+    private String username;
+
+    public ServerConnection(Socket socket, RolitServer rolitServer, String name) {
+        name = "Client No. " + name;
+        this.rolitServer = rolitServer;
         try {
-            peer = new ServerPeer(socket, this, this.name);
+            peer = new ServerPeer(socket, this, name);
             Thread thread = new Thread(peer);
             thread.start();
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public String getUsername() {
+        return username;
     }
 
     public void setGame(Game game) {
@@ -47,7 +55,6 @@ public class ServerConnection implements ProtocolHandler {
     public void startGame(ConnectedPlayer[] players) {
         StringBuilder message = new StringBuilder();
         for (ConnectedPlayer player : players) {
-            System.out.println(player.getName());
             message.append(player.getName());
             message.append(" ");
         }
@@ -79,13 +86,14 @@ public class ServerConnection implements ProtocolHandler {
 
             switch (protocolMessage) {
                 case Protocol.AUTHENTICATE_CLIENT:
-                    String username = args[0];
-                    AuthenticationConnection authenticationConnection = new AuthenticationConnection(this, username, name);
+                    username = args[0];
+                    peer.setName(username);
+                    new AuthenticationConnection(this, username);
                     break;
                 case Protocol.TOKEN_REPLY:
                     if (Crypto.verifyToken(Crypto.decodeBase64(args[0]), plainToken, publicKey)) {
                         peer.send(Protocol.AUTHENTICATED + " 0 0");
-                        rolitServer.removeConnection(peer);
+                        rolitServer.removeConnection(this);
                         //TODO ================ Client Authenticated ================
                         //wait for joingame?
                     } else {
@@ -93,10 +101,9 @@ public class ServerConnection implements ProtocolHandler {
                         peer.send(Protocol.ERROR + " Tokenreply was not valid! Disconnecting client.");
                         peer.shutDown();
                     }
-                    System.out.println("========> Received base64: " + args[0]);
                     break;
                 case Protocol.JOIN_GAME:
-                    rolitServer.joinWaitlist(peer, Integer.parseInt(args[0]));
+                    rolitServer.joinWaitlist(this, Integer.parseInt(args[0]));
                     break;
                 case Protocol.MAKE_MOVE:
                     int field = Integer.parseInt(args[0]);
