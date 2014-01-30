@@ -28,7 +28,7 @@ public class ServerConnection implements ProtocolHandler {
         name = "Client No. " + name;
         this.rolitServer = rolitServer;
         try {
-            peer = new ServerPeer(socket, this, name);
+            peer = new ServerPeer(socket, this, name, rolitServer);
             Thread thread = new Thread(peer);
             thread.start();
         } catch (IOException e) {
@@ -117,8 +117,12 @@ public class ServerConnection implements ProtocolHandler {
                         rolitServer.joinWaitlist(this, Integer.parseInt(args[0]));
                         break;
                     case Protocol.MAKE_MOVE:
-                        int field = Integer.parseInt(args[0]);
-                        game.takeTurn(field);
+                        if (game.getBoard().getPlayers()[game.getCurrent()].getServerConnection() == this) {
+                            int field = Integer.parseInt(args[0]);
+                            game.takeTurn(field);
+                        } else {
+                            peer.send(Protocol.ERROR + " It is not your turn!");
+                        }
                         break;
                     case Protocol.EXIT:
                         peer.shutDown();

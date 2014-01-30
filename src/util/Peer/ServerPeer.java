@@ -1,40 +1,34 @@
 package util.Peer;
 
+import server.RolitServer;
 import server.connection.ServerConnection;
-import server.game.Game;
+import util.ProtocolHandler;
 
 import java.io.IOException;
 import java.net.Socket;
 
 public class ServerPeer extends Peer {
     private ServerConnection serverConnection;
-    private Game game;
+    private RolitServer rolitServer;
 
     /**
      * Constructor. creates a peer object based inStream the given parameters.
      *
      * @param socket          Socket of the Peer-proces
-     * @param serverConnection
+     * @param protocolHandler
      * @param name
      */
-    public ServerPeer(Socket socket, ServerConnection serverConnection, String name) throws IOException {
-        super(socket, serverConnection, name);
-        this.serverConnection = serverConnection;
-    }
-
-    public ServerConnection getServerConnection() {
-        return  serverConnection;
-    }
-
-    public void setGame(Game game) {
-        this.game = game;
+    public ServerPeer(Socket socket, ProtocolHandler protocolHandler, String name, RolitServer rolitServer) throws IOException {
+        super(socket, protocolHandler, name);
+        this.rolitServer = rolitServer;
     }
 
     /**
      * Closes the connection, the sockets will be terminated
      */
     public void shutDown() {
-        //TODO; remove from server connections etc.
+        rolitServer.removeConnection((ServerConnection) protocolHandler);
+        rolitServer.removeAuthenticated((ServerConnection) protocolHandler);
         super.shutDown();
     }
 }
