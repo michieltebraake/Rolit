@@ -13,7 +13,12 @@ import java.net.Socket;
 import java.security.PrivateKey;
 
 public class ConnectView extends JFrame implements ActionListener {
-    private RolitView rolitView;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -1744965853360505074L;
+
+	private RolitView rolitView;
 
     private JButton connectButton;
     private JTextField usernameText;

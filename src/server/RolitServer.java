@@ -16,11 +16,13 @@ import java.util.List;
  *
  */
 public class RolitServer {
-    List<ServerConnection> connections = new ArrayList<>();
+    private List<ServerConnection> connections = new ArrayList<>();
 
-    List<ServerConnection> authenticated2 = new ArrayList<>();
-    List<ServerConnection> authenticated3 = new ArrayList<>();
-    List<ServerConnection> authenticated4 = new ArrayList<>();
+    private List<ServerConnection> authenticated2 = new ArrayList<>();
+    private List<ServerConnection> authenticated3 = new ArrayList<>();
+    private List<ServerConnection> authenticated4 = new ArrayList<>();
+    
+    private ServerSocket serverSocket = null;
 
     public static void main(String[] args) {
         new RolitServer().start();
@@ -28,7 +30,6 @@ public class RolitServer {
 
     private void start() {
         boolean startedServer = false;
-        ServerSocket serverSocket = null;
         while (!startedServer) {
             System.out.print("Port: ");
             String portString = Peer.readString();
@@ -47,7 +48,7 @@ public class RolitServer {
                 System.out.println("Invalid port number!");
             }
         }
-
+        
         System.out.println("Starting server...");
 
         int clientNo = 1;

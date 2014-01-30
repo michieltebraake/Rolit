@@ -220,16 +220,7 @@ public class Board {
 
         return false;
     }
-
-    private boolean hasMark(Mark mark) {
-        for (int i = 0; i < Board.DIM * Board.DIM; i++) {
-            if (getField(i) == mark) {
-                return true;
-            }
-        }
-        return false;
-    }
-
+    
     public boolean canMakeMove(Mark mark) {
         for (int i = 0; i < DIM * DIM; i++) {
             if (getField(i) == mark) {

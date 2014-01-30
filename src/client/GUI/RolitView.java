@@ -18,7 +18,12 @@ import java.util.Observer;
  */
 
 public class RolitView extends JFrame implements Observer {
-    private ButtonListener buttonListener;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -8820391706032092419L;
+
+	private ButtonListener buttonListener;
 
     private JButton[] buttons = new JButton[Board.DIM * Board.DIM];
 
@@ -175,7 +180,7 @@ public class RolitView extends JFrame implements Observer {
                 Mark mark = clientConnection.getBoard().getField(i);
                 buttons[i].setBackground(mark.getColor());
                 //Check if client is AI (buttons should always be disabled for
-                if (clientConnection.getAI() || arg == false) {
+                if (clientConnection.getAI() || (boolean) arg == false) {
                     buttons[i].setEnabled(false);
                 } else {
                     if (mark != Mark.EMPTY) {
