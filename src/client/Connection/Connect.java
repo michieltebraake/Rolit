@@ -3,7 +3,9 @@ package client.Connection;
 import client.GUI.RolitView;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.security.PrivateKey;
 
 public class Connect extends Thread {
@@ -28,10 +30,13 @@ public class Connect extends Thread {
     public void run() {
         Socket socket;
         try {
+            InetAddress.getByName(ip);
             socket = new Socket(ip, port);
             rolitView.setupProtocol(socket, username, ai, players, privateKey);
+        } catch (UnknownHostException e) {
+            rolitView.getStatusLabel().setText("Error: Connection with the game server could not be established. (Unknown Host)");
         } catch (IOException e) {
-            e.printStackTrace();
+            rolitView.getStatusLabel().setText("Error: Connection with the game server could not be established. (Connection Refused)");
         }
     }
 }
