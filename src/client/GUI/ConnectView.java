@@ -23,8 +23,6 @@ public class ConnectView extends JFrame implements ActionListener {
     private JCheckBox aiBox;
     private JComboBox<Integer> jComboBox;
     private int port;
-    public final static String AUTH_SERVER = "130.89.163.155";
-    public final static int AUTH_PORT = 2013;
 
     public ConnectView(RolitView rolitView) {
         this.rolitView = rolitView;
@@ -99,7 +97,7 @@ public class ConnectView extends JFrame implements ActionListener {
                     return;
                 }
 
-                AuthConnect authConnect = new AuthConnect(this, AUTH_SERVER, AUTH_PORT);
+                AuthConnect authConnect = new AuthConnect(this);
                 authConnect.start();
                 rolitView.getStatusLabel().setText("Authenticating user: " + usernameText.getText());
                 this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));

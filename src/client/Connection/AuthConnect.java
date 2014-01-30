@@ -3,26 +3,29 @@ package client.Connection;
 import client.GUI.ConnectView;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.Socket;
+import java.net.UnknownHostException;
 
-public class AuthConnect extends Thread{
+public class AuthConnect extends Thread {
     private ConnectView connectView;
-    private String serverIP;
-    private int serverPort;
+    public final static String AUTH_SERVER = "ss-security.student.utwente.nl";
+    public final static int AUTH_PORT = 2013;
 
-    public AuthConnect(ConnectView connectView, String serverIP, int serverPort) {
+    public AuthConnect(ConnectView connectView) {
         this.connectView = connectView;
-        this.serverIP = serverIP;
-        this.serverPort = serverPort;
     }
 
     public void run() {
         Socket clientSocket;
         try {
-            clientSocket = new Socket(serverIP, serverPort);
+            InetAddress.getByName(AUTH_SERVER);
+            clientSocket = new Socket(AUTH_SERVER, AUTH_PORT);
             connectView.setupAuthentication(clientSocket);
+        } catch (UnknownHostException e) {
+            connectView.getRolitView().getStatusLabel().setText("Error: Connection with the authentication server could not be established. (Unknown Host)");
         } catch (IOException e) {
-            e.printStackTrace();
+            connectView.getRolitView().getStatusLabel().setText("Error: Connection with the authentication server could not be established. (Connection Refused)");
         }
     }
 }
