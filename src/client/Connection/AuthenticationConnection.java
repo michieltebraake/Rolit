@@ -1,6 +1,7 @@
 package client.Connection;
 
 import client.GUI.ConnectView;
+import util.AuthenticationProtocol;
 import util.Crypto;
 import util.Peer.Peer;
 import util.ProtocolHandler;
@@ -24,7 +25,7 @@ public class AuthenticationConnection implements ProtocolHandler {
         }
         Thread thread = new Thread(peer);
         thread.start();
-        peer.send("IDPLAYER " + username + " " + password);
+        peer.send(AuthenticationProtocol.REQUEST_PRIVATEKEY + " " + username + " " + password);
     }
 
 
@@ -39,12 +40,12 @@ public class AuthenticationConnection implements ProtocolHandler {
                 args[i] = messageSplit[i + 1];
             }
             switch (protocolMessage) {
-                case "PRIVKEY":
+                case AuthenticationProtocol.PRIVATEKEY_RESPONSE:
                     privateKey = Crypto.decodePrivateKey(Crypto.decodeBase64(args[0]));
                     connectView.createClientConnection(privateKey);
                     peer.shutDown();
                     break;
-                case "ERROR":
+                case AuthenticationProtocol.ERROR:
                     connectView.getRolitView().getStatusLabel().setText("Authentication failed (Wrong password/username)! Not connected.");
                     peer.shutDown();
                     break;

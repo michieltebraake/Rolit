@@ -74,6 +74,10 @@ public class ServerConnection implements ProtocolHandler {
         peer.send(Protocol.GAME_OVER);
     }
 
+    public ServerPeer getPeer(){
+        return peer;
+    }
+
     public void handleMessage(String message) {
         String[] messageSplit = message.split(" ");
         if (messageSplit.length > 0) {

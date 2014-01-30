@@ -1,7 +1,9 @@
 package server.connection;
 
+import util.AuthenticationProtocol;
 import util.Crypto;
 import util.Peer.Peer;
+import util.Protocol;
 import util.ProtocolHandler;
 
 import java.io.IOException;
@@ -26,7 +28,7 @@ public class AuthenticationConnection implements ProtocolHandler{
         } catch (IOException e) {
             e.printStackTrace();
         }
-        peer.send("PUBLICKEY " + username);
+        peer.send(AuthenticationProtocol.REQUEST_PUBLICKEY + " " + username);
     }
 
     public void handleMessage(String message) {
@@ -41,13 +43,16 @@ public class AuthenticationConnection implements ProtocolHandler{
             }
 
             switch (protocolMessage) {
-                case "PUBKEY":
+                case AuthenticationProtocol.PUBLICKEY_RESPONSE:
                     PublicKey publicKey = Crypto.decodePublicKey(Crypto.decodeBase64(args[0]));
                     serverConnection.setPublicKey(publicKey);
                     serverConnection.requestToken();
                     peer.shutDown();
                     break;
-                //TODO: error handling
+                default:
+                    serverConnection.getPeer().send(Protocol.ERROR + " Authentication server could not identify you!");
+                    serverConnection.getPeer().shutDown();
+                    peer.shutDown();
             }
         }
     }

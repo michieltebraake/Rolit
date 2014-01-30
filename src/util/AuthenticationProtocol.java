@@ -6,7 +6,7 @@ public class AuthenticationProtocol {
      * Requests publickey from authentication server.
      * @param username
      */
-    public static final String REQUEST_PUBLICKEY = "PUBLICKEY ";
+    public static final String REQUEST_PUBLICKEY = "PUBLICKEY";
 
     /**
      * Authentication reponse for REQUEST_PUBLICKEY.
@@ -19,11 +19,17 @@ public class AuthenticationProtocol {
      * @param username
      * @param password
      */
-    public static final String REQUEST_PRIVATEKEY = "IDPLAYER ";
+    public static final String REQUEST_PRIVATEKEY = "IDPLAYER";
 
     /**
      * Authentication reponse for REQUEST_PRIVATEKEY.
      * @param privatekey in base64 String.
      */
     public static final String PRIVATEKEY_RESPONSE = "PRIVKEY";
+
+    /**
+     * Authentication server response for unknown protocol/wrong paraters.
+     * @param String Error information.
+     */
+    public static final String ERROR = "ERROR";
 }
