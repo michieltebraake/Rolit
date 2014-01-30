@@ -104,7 +104,7 @@ public class RolitServer {
         ConnectedPlayer[] players = new ConnectedPlayer[authenticated.size()];
         for (int i = 0; i < authenticated.size(); i++) {
             System.out.println("Adding player to start list");
-            players[i] = new ConnectedPlayer("player" + i, marks[i], authenticated.get(i));
+            players[i] = new ConnectedPlayer(authenticated.get(i).getServerConnection().getUsername(), marks[i], authenticated.get(i));
         }
 
         Game game = new Game(players);

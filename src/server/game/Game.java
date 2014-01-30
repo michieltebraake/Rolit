@@ -75,10 +75,6 @@ public class Game extends Observable {
         Mark currentMark = board.getPlayers()[current].getMark();
         List<Integer> rollFields = board.getRollFields(currentMark, x, y);
 
-        System.out.println("Can make move: " + board.canMakeMove(currentMark));
-        System.out.println("Next to ball: " + board.nextToBall(x, y) + " at " + x + "," + y);
-        System.out.println("Rollfields: " + rollFields + " from mark " + currentMark);
-
         if(!board.canMakeMove(currentMark) && board.nextToBall(x, y)){
             board.setField(x, y, currentMark);
             makeMove(board.getFieldID(x, y));
@@ -93,8 +89,6 @@ public class Game extends Observable {
 
     private void makeMove(int field) {
         ConnectedPlayer[] players = board.getPlayers();
-
-        System.out.println(current);
 
         current++;
         current = current % players.length;

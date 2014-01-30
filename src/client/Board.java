@@ -257,9 +257,9 @@ public class Board {
         for (int i = 0; i < fields.length; i++) {
             setField(i, Mark.EMPTY);
         }
-        setField(3, 4, Mark.BLUE);
-        setField(3, 3, Mark.RED);
-        setField(4, 4, Mark.GREEN);
-        setField(4, 3, Mark.YELLOW);
+        setField((DIM / 2) - 1, (DIM / 2) - 1, Mark.RED);
+        setField((DIM / 2) - 1, (DIM / 2), Mark.BLUE);
+        setField((DIM / 2), (DIM / 2) - 1, Mark.YELLOW);
+        setField(DIM / 2, DIM  / 2, Mark.GREEN);
     }
 }
