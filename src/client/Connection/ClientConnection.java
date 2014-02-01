@@ -1,10 +1,8 @@
 package client.Connection;
 
-import util.Board;
 import client.ComputerPlayer;
 import client.GUI.RolitView;
 import client.HumanPlayer;
-import util.Player;
 import client.Strategy.SmartStrategy;
 import util.*;
 import util.Peer.Peer;
@@ -96,9 +94,8 @@ public class ClientConnection extends Observable implements ProtocolHandler {
             String protocolMessage = messageSplit[0];
             //Make a new array of arguments that doesn't contain the protocol word.
             String args[] = new String[messageSplit.length - 1];
-            for (int i = 0; i < messageSplit.length - 1; i++) {
-                args[i] = messageSplit[i + 1];
-            }
+
+            System.arraycopy(messageSplit, 1, args, 0, messageSplit.length - 1);
 
             switch (protocolMessage) {
                 case Protocol.TOKEN_REQUEST:

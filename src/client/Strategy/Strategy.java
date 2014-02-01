@@ -12,9 +12,9 @@ public interface Strategy {
 
     /**
      * Determine the next AI move
-     * @param board
-     * @param mark
-     * @return
+     * @param board board to determine move for
+     * @param mark mark to be used
+     * @return field number
      */
     public int determineMove(Board board, Mark mark);
 }

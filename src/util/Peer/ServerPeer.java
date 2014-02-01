@@ -14,8 +14,8 @@ public class ServerPeer extends Peer {
      * Constructor. creates a peer object based inStream the given parameters.
      *
      * @param socket          Socket of the Peer-proces
-     * @param protocolHandler
-     * @param name
+     * @param protocolHandler socketHandler
+     * @param name            name of the peer
      */
     public ServerPeer(Socket socket, ProtocolHandler protocolHandler, String name, RolitServer rolitServer) throws IOException {
         super(socket, protocolHandler, name);

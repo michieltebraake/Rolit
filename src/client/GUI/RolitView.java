@@ -179,7 +179,7 @@ public class RolitView extends JFrame implements Observer {
      * This method is called via the <code>notifyObservers()</code> method in game.
      *
      * @param observable the game controller
-     * @param arg
+     * @param arg whether or not it is the players turn
      */
     @Override
     public void update(Observable observable, Object arg) {

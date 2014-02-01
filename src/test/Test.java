@@ -10,13 +10,13 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-class GameTest {
+class Test {
     private Game game;
     private ServerSocket serverSocket;
 
     public static void main(String[] args) {
         try {
-            new GameTest().start();
+            new Test().start();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -51,14 +51,6 @@ class GameTest {
         }
     }
 
-    void testGetCurrent() {
-
-    }
-
-    void testReset() {
-
-    }
-
     void testTakeTurn() throws Exception {
         //Make a move, current should increase by one.
         game.takeTurn(45);
@@ -80,10 +72,6 @@ class GameTest {
         //Make another invalid move (player can't form line to the selected field), current should stay the same.
         game.takeTurn(26);
         assertEquals(0, game.getCurrent());
-
-        
-
-        System.out.println(game.getCurrent());
     }
 
     public static void assertEquals(Object expected, Object actual) throws Exception {

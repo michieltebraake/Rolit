@@ -22,7 +22,7 @@ public class ButtonListener implements ActionListener {
         if (rolitView.getExitItem().equals(event.getSource())) {
             rolitView.dispatchEvent(new WindowEvent(rolitView, WindowEvent.WINDOW_CLOSING));
         } else if (rolitView.getRestartItem().equals(event.getSource())) {
-            //TODO Send reset request via protocol
+            //Protocol does not support restart requests.
         } else if (rolitView.getConnectItem().equals(event.getSource())) {
             new ConnectView(rolitView);
         } else if (rolitView.getShowPossibleMoves().equals(event.getSource())) {
