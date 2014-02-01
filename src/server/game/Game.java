@@ -14,6 +14,7 @@ public class Game {
 
     private int current = 0;
 
+    //@ requires players != null && !players.isEmpty();
     /**
      * Constructs a game.
      *
@@ -29,6 +30,7 @@ public class Game {
         players[current].getServerConnection().requestMove();
     }
 
+    //@ ensures \result != null;
     /**
      * @return board the game board
      */
@@ -36,6 +38,7 @@ public class Game {
         return board;
     }
 
+    //@ ensures \result != null;
     /**
      * @return mark the current mark
      */
@@ -43,6 +46,7 @@ public class Game {
         return current;
     }
 
+    //@ ensures getResult() == 0;
     /**
      * Resets the board to the initial state.
      */
@@ -51,6 +55,7 @@ public class Game {
         board.resetBoard();
     }
 
+    //@ requires field >= 0 && field < Board.DIM * Board.DIM;
     /**
      * Places a move at given field id.
      * Will not change anything if move is not valid.
@@ -62,6 +67,8 @@ public class Game {
         takeTurn(coordinates[0], coordinates[1]);
     }
 
+    //@ requires x >= 0 && x < Board.DIM;
+    //@ requires y >= 0 && y < Board.DIM;
     /**
      * Places a move at given x and y coordinate.
      * Will not change anything if move is not valid.

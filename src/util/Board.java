@@ -17,6 +17,7 @@ public class Board {
     public final static int[] xMoves = new int[]{0, 1, 1, 1, 0, -1, -1, -1};
     public final static int[] yMoves = new int[]{1, 1, 0, -1, -1, -1, 0, 1};
 
+    //@ requires players != null && players.length != 0;
     /**
      * Constructs a board.
      *
@@ -28,13 +29,16 @@ public class Board {
         resetBoard();
     }
 
+    //@ ensures \result != null && \result.length != 0;
     /**
      * @return Player[] array of players in the game
      */
-    public Player[] getPlayers() {
+    public /*@ pure @*/ Player[] getPlayers() {
         return players;
     }
 
+    //@ requires x >= 0 && x < Board.DIM;
+    //@ requires y >= 0 && y < Board.DIM;
     /**
      * Returns FieldID.
      *
@@ -42,22 +46,26 @@ public class Board {
      * @param y y-coordinate
      * @return FieldID
      */
-    public int getFieldID(int x, int y) {
+    public /*@ pure @*/ int getFieldID(int x, int y) {
         return x + DIM * y;
     }
 
+    //@ requires fieldID >= 0 && fieldID <= Board.DIM * Board.DIM;
     /**
      * Returns an array with an x an y coordinate.
      *
      * @param fieldID FieldID
      * @return array containing [x,y]
      */
-    public int[] getCoordinates(int fieldID) {
+    public /*@ pure @*/ int[] getCoordinates(int fieldID) {
         int x = fieldID % DIM;
         int y = (int) Math.floor(fieldID / DIM);
         return new int[]{x, y};
     }
 
+    //@ requires fieldID >= 0 && fieldID <= Board.DIM * Board.DIM;
+    //@ requires mark != null;
+    //@ ensures getField(fieldID) == mark;
     /**
      * Sets a field to a given mark.
      *
@@ -68,6 +76,10 @@ public class Board {
         fields[fieldID] = mark;
     }
 
+    //@ requires x >= 0 && x < Board.DIM;
+    //@ requires y >= 0 && y < Board.DIM;
+    //@ requires mark != null;
+    //@ ensures getField(x, y) == mark;
     /**
      * Sets a field to a given mark.
      *
@@ -79,16 +91,19 @@ public class Board {
         fields[getFieldID(x, y)] = mark;
     }
 
+    //@ requires fieldID >= 0 && fieldID <= Board.DIM * Board.DIM;
     /**
      * Returns the value of a given field.
      *
      * @param fieldID fieldID.
      * @return mark
      */
-    public Mark getField(int fieldID) {
+    public /*@ pure @*/ Mark getField(int fieldID) {
         return fields[fieldID];
     }
 
+    //@ requires x >= 0 && x < Board.DIM;
+    //@ requires y >= 0 && y < Board.DIM;
     /**
      * Returns the value of a given field.
      *
@@ -96,7 +111,7 @@ public class Board {
      * @param y y-coordinate
      * @return mark
      */
-    public Mark getField(int x, int y) {
+    public /*@ pure @*/ Mark getField(int x, int y) {
         return fields[getFieldID(x, y)];
     }
 
@@ -105,7 +120,7 @@ public class Board {
      *
      * @return true if all fields are occupied.
      */
-    public boolean isFull() {
+    public /*@ pure @*/ boolean isFull() {
         for (Mark mark : fields) {
             if (mark == Mark.EMPTY) {
                 return false;
@@ -119,7 +134,7 @@ public class Board {
      *
      * @return winner Mark of player with the most marks on the board
      */
-    public Mark getWinner() {
+    public /*@ pure @*/ Mark getWinner() {
         HashMap<Mark, Integer> markFields = new HashMap<>();
 
         for (Mark mark : fields) {
@@ -139,6 +154,8 @@ public class Board {
         return maxEntry.getKey();
     }
 
+    //@ requires x >= 0 && x < Board.DIM;
+    //@ requires y >= 0 && y < Board.DIM;
     /**
      * Checks if given location is valid (fits on the board)
      *
@@ -146,10 +163,14 @@ public class Board {
      * @param y x-coordinate
      * @return valid whether location is valid
      */
-    public static boolean validLocation(int x, int y) {
+    public /*@ pure @*/ static boolean validLocation(int x, int y) {
         return x >= 0 && x < Board.DIM && y >= 0 && y < Board.DIM;
     }
 
+    //@ requires mark != null;
+    //@ requires x >= 0 && x < Board.DIM;
+    //@ requires y >= 0 && y < Board.DIM;
+    //@ ensures \result != null;
     /**
      * Returns all the ids of the fields that would be changed to the current mark with the given move.
      *
@@ -157,7 +178,7 @@ public class Board {
      * @param y y-coordinate of the move that is being made
      * @return rollFields list of fields that are changed by this move
      */
-    public List<Integer> getRollFields(Mark mark, int x, int y) {
+    public /*@ pure @*/ List<Integer> getRollFields(Mark mark, int x, int y) {
         List<Integer> rollFields = new ArrayList<>();
         for (int i = 0; i < 8; i++) {
             List<Integer> fieldsToAdd = getRollFields(mark, x, y, xMoves[i], yMoves[i]);
@@ -168,7 +189,7 @@ public class Board {
         return rollFields;
     }
 
-    private List<Integer> getRollFields(Mark mark, int x, int y, int addX, int addY) {
+    private /*@ pure @*/ List<Integer> getRollFields(Mark mark, int x, int y, int addX, int addY) {
         List<Integer> otherMarkFields = new ArrayList<>();
         boolean foundOwnMark = false;
 
@@ -192,6 +213,9 @@ public class Board {
         return foundOwnMark ? otherMarkFields : null;
     }
 
+    //@ requires mark != null;
+    //@ requires x >= 0 && x < Board.DIM;
+    //@ requires y >= 0 && y < Board.DIM;
     /**
      * Tests if a line can be formed with given mark from given x and y.
      * The given x and y coordinates should be empty.
@@ -202,7 +226,7 @@ public class Board {
      * @param y    y-coordinate to check from
      * @return whether or not a line can be made
      */
-    public boolean canFormLineToOwnMark(Mark mark, int x, int y) {
+    public /*@ pure @*/ boolean canFormLineToOwnMark(Mark mark, int x, int y) {
         for (int i = 0; i < 8; i++) {
             if (canFormLineToOwnMark(mark, x, y, xMoves[i], yMoves[i])) {
                 return true;
@@ -211,7 +235,7 @@ public class Board {
         return false;
     }
 
-    private boolean canFormLineToOwnMark(Mark mark, int x, int y, int addX, int addY) {
+    private /*@ pure @*/ boolean canFormLineToOwnMark(Mark mark, int x, int y, int addX, int addY) {
         boolean foundOtherMark = false;
 
         //Add to x & y before starting to loop (don't want to check the field that is being changed)
@@ -234,6 +258,9 @@ public class Board {
         return false;
     }
 
+    //@ requires mark != null;
+    //@ requires x >= 0 && x < Board.DIM;
+    //@ requires y >= 0 && y < Board.DIM;
     /**
      * Tests if given mark can form a line to given x and y coordinates.
      * The given x and y coordinates should have the given mark there.
@@ -244,7 +271,7 @@ public class Board {
      * @param y    y-coordinate to check from
      * @return whether or not a line can be made
      */
-    public boolean canFormLineFromOwnMark(Mark mark, int x, int y) {
+    public /*@ pure @*/ boolean canFormLineFromOwnMark(Mark mark, int x, int y) {
         for (int i = 0; i < 8; i++) {
             if (canFormLineFromOwnMark(mark, x, y, xMoves[i], yMoves[i])) {
                 return true;
@@ -253,7 +280,7 @@ public class Board {
         return false;
     }
 
-    private boolean canFormLineFromOwnMark(Mark mark, int x, int y, int addX, int addY) {
+    private /*@ pure @*/ boolean canFormLineFromOwnMark(Mark mark, int x, int y, int addX, int addY) {
         boolean foundOtherMark = false;
 
         //Add to x & y before starting to loop (don't want to check the field that is being changed)
@@ -276,13 +303,14 @@ public class Board {
         return false;
     }
 
+    //@ requires mark != null;
     /**
      * Checks if given mark can make a move (form a line).
      *
      * @param mark Mark to check
      * @return true if player can form a line
      */
-    public boolean canMakeMove(Mark mark) {
+    public /*@ pure @*/ boolean canMakeMove(Mark mark) {
         for (int i = 0; i < DIM * DIM; i++) {
             if (getField(i) == mark) {
                 if (canFormLineFromOwnMark(mark, getCoordinates(i)[0], getCoordinates(i)[1])) {
@@ -293,6 +321,8 @@ public class Board {
         return false;
     }
 
+    //@ requires x >= 0 && x < Board.DIM;
+    //@ requires y >= 0 && y < Board.DIM;
     /**
      * Checks if there is a ball next to given x and y coordinates.
      *
@@ -300,7 +330,7 @@ public class Board {
      * @param y y-coordinate to check around
      * @return true if there is a ball next to the given location
      */
-    public boolean nextToBall(int x, int y) {
+    public /*@ pure @*/ boolean nextToBall(int x, int y) {
         for (int i = 0; i < 8; i++) {
             if (validLocation(x + xMoves[i], y + yMoves[i]) && getField(x + xMoves[i], y + yMoves[i]) != Mark.EMPTY) {
                 return true;

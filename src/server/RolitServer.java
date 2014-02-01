@@ -94,7 +94,7 @@ public class RolitServer {
      * @param username name of user
      * @return true if player is connected
      */
-    public boolean isConnected(String username) {
+    public /*@ pure @*/ boolean isConnected(String username) {
         return isConnected(username, connections) + isConnected(username, authenticated2) + isConnected(username, authenticated3) + isConnected(username, authenticated4) > 1;
     }
 
@@ -108,6 +108,7 @@ public class RolitServer {
         return connections;
     }
 
+    //@ requires players >= 2 && players <= 4;
     /**
      * Makes a player join the waitlist for a game.
      * Starts a game if enough players are in the waitlist.

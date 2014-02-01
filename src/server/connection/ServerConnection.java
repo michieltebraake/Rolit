@@ -24,6 +24,9 @@ public class ServerConnection implements ProtocolHandler {
     private String username;
     private boolean authenticated;
 
+    //@ requires socket != null;
+    //@ requires rolitServer != null;
+    //@ requires name != null;
     /**
      * Constructs a ServerConnection.
      *
@@ -43,27 +46,31 @@ public class ServerConnection implements ProtocolHandler {
         }
     }
 
+    //@ ensures \result != null;
     /**
      * @return username username of player
      */
-    public String getUsername() {
+    public /*@ pure @*/ String getUsername() {
         return username;
     }
 
+    //@ ensures \result != null;
     /**
      * @return peer peer connection with the client
      */
-    public ServerPeer getPeer(){
+    public /*@ pure @*/ ServerPeer getPeer(){
         return peer;
     }
 
+    //@ requires game != null;
     /**
      * @param game game player is in
      */
-    public void setGame(Game game) {
+    public /*@ pure @*/ void setGame(Game game) {
         this.game = game;
     }
 
+    //@ requires publicKey != null;
     /**
      * @param publicKey public key of player
      */
@@ -119,6 +126,7 @@ public class ServerConnection implements ProtocolHandler {
         peer.send(Protocol.GAME_OVER);
     }
 
+    //@ requires message != null;
     /**
      * Handles a message that was received from the client.
      *
