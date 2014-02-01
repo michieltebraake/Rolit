@@ -1,25 +1,21 @@
 package server.game;
 
 import server.connection.ServerConnection;
+import util.Board;
 import util.Mark;
+import util.Player;
 
-public class ConnectedPlayer {
-    private String name;
-    private Mark mark;
+public class ConnectedPlayer extends Player {
     private ServerConnection serverConnection;
 
     public ConnectedPlayer(String name, Mark mark, ServerConnection serverConnection) {
-        this.name = name;
-        this.mark = mark;
+        super(name, mark);
         this.serverConnection = serverConnection;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public Mark getMark() {
-        return mark;
+    @Override
+    public int determineMove(Board board) {
+        return 0;
     }
 
     public ServerConnection getServerConnection() {

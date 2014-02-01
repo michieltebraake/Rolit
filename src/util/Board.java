@@ -1,6 +1,4 @@
-package server.game;
-
-import util.Mark;
+package util;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,17 +12,17 @@ import java.util.Map;
 public class Board {
     public static final int DIM = 8;
     private Mark[] fields;
-    private ConnectedPlayer[] players;
+    private Player[] players;
 
-    private final static int[] xMoves = new int[]{0, 1, 1, 1, 0, -1, -1, -1};
-    private final static int[] yMoves = new int[]{1, 1, 0, -1, -1, -1, 0, 1};
+    public final static int[] xMoves = new int[]{0, 1, 1, 1, 0, -1, -1, -1};
+    public final static int[] yMoves = new int[]{1, 1, 0, -1, -1, -1, 0, 1};
 
     /**
      * Constructs a board.
      *
      * @param players array of players in the game
      */
-    public Board(ConnectedPlayer[] players) {
+    public Board(Player[] players) {
         this.players = players;
         fields = new Mark[DIM * DIM];
         resetBoard();
@@ -33,7 +31,7 @@ public class Board {
     /**
      * @return Player[] array of players in the game
      */
-    public ConnectedPlayer[] getPlayers() {
+    public Player[] getPlayers() {
         return players;
     }
 
@@ -116,19 +114,24 @@ public class Board {
         return true;
     }
 
+    /**
+     * Loops through all the fields on the board to find the player with the most marks on the board.
+     *
+     * @return winner Mark of player with the most marks on the board
+     */
     public Mark getWinner() {
         HashMap<Mark, Integer> markFields = new HashMap<>();
 
         for (Mark mark : fields) {
-            if(markFields.containsKey(mark)){
+            if (markFields.containsKey(mark)) {
                 markFields.put(mark, markFields.get(mark) + 1);
             } else {
                 markFields.put(mark, 1);
             }
         }
 
-        Map.Entry<Mark,Integer> maxEntry = null;
-        for(Map.Entry<Mark,Integer> entry : markFields.entrySet()) {
+        Map.Entry<Mark, Integer> maxEntry = null;
+        for (Map.Entry<Mark, Integer> entry : markFields.entrySet()) {
             if (maxEntry == null || entry.getValue() > maxEntry.getValue()) {
                 maxEntry = entry;
             }
@@ -189,16 +192,68 @@ public class Board {
         return foundOwnMark ? otherMarkFields : null;
     }
 
-    private boolean canFormLineFrom(Mark mark, int x, int y) {
+    /**
+     * Tests if a line can be formed with given mark from given x and y.
+     * The given x and y coordinates should be empty.
+     * Returns true when an opponents mark is found and after that the players mark is found (without an empty field in between).
+     *
+     * @param mark Mark to form a line with
+     * @param x    x-coordinate to check from
+     * @param y    y-coordinate to check from
+     * @return whether or not a line can be made
+     */
+    public boolean canFormLineToOwnMark(Mark mark, int x, int y) {
         for (int i = 0; i < 8; i++) {
-            if (canFormLineFrom(mark, x, y, xMoves[i], yMoves[i])) {
+            if (canFormLineToOwnMark(mark, x, y, xMoves[i], yMoves[i])) {
                 return true;
             }
         }
         return false;
     }
 
-    private boolean canFormLineFrom(Mark mark, int x, int y, int addX, int addY) {
+    private boolean canFormLineToOwnMark(Mark mark, int x, int y, int addX, int addY) {
+        boolean foundOtherMark = false;
+
+        //Add to x & y before starting to loop (don't want to check the field that is being changed)
+        x += addX;
+        y += addY;
+
+        while (x >= 0 && x < DIM && y >= 0 && y < DIM) {
+            if (getField(x, y) == mark) {
+                return foundOtherMark;
+            } else if (getField(x, y) != mark && getField(x, y) != Mark.EMPTY) {
+                foundOtherMark = true;
+            } else {
+                return false;
+            }
+
+            x += addX;
+            y += addY;
+        }
+
+        return false;
+    }
+
+    /**
+     * Tests if given mark can form a line to given x and y coordinates.
+     * The given x and y coordinates should have the given mark there.
+     * Returns true when an opponents mark is found and after that an empty field is found (without the players mark in between).
+     *
+     * @param mark Mark to form a line with
+     * @param x    x-coordinate to check from
+     * @param y    y-coordinate to check from
+     * @return whether or not a line can be made
+     */
+    public boolean canFormLineFromOwnMark(Mark mark, int x, int y) {
+        for (int i = 0; i < 8; i++) {
+            if (canFormLineFromOwnMark(mark, x, y, xMoves[i], yMoves[i])) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean canFormLineFromOwnMark(Mark mark, int x, int y, int addX, int addY) {
         boolean foundOtherMark = false;
 
         //Add to x & y before starting to loop (don't want to check the field that is being changed)
@@ -220,11 +275,17 @@ public class Board {
 
         return false;
     }
-    
+
+    /**
+     * Checks if given mark can make a move (form a line).
+     *
+     * @param mark Mark to check
+     * @return true if player can form a line
+     */
     public boolean canMakeMove(Mark mark) {
         for (int i = 0; i < DIM * DIM; i++) {
             if (getField(i) == mark) {
-                if (canFormLineFrom(mark, getCoordinates(i)[0], getCoordinates(i)[1])) {
+                if (canFormLineFromOwnMark(mark, getCoordinates(i)[0], getCoordinates(i)[1])) {
                     return true;
                 }
             }
@@ -232,6 +293,13 @@ public class Board {
         return false;
     }
 
+    /**
+     * Checks if there is a ball next to given x and y coordinates.
+     *
+     * @param x x-coordinate to check around
+     * @param y y-coordinate to check around
+     * @return true if there is a ball next to the given location
+     */
     public boolean nextToBall(int x, int y) {
         for (int i = 0; i < 8; i++) {
             if (validLocation(x + xMoves[i], y + yMoves[i]) && getField(x + xMoves[i], y + yMoves[i]) != Mark.EMPTY) {
@@ -251,6 +319,6 @@ public class Board {
         setField((DIM / 2) - 1, (DIM / 2) - 1, Mark.RED);
         setField((DIM / 2) - 1, (DIM / 2), Mark.BLUE);
         setField((DIM / 2), (DIM / 2) - 1, Mark.YELLOW);
-        setField(DIM / 2, DIM  / 2, Mark.GREEN);
+        setField(DIM / 2, DIM / 2, Mark.GREEN);
     }
 }

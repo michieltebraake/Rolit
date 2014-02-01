@@ -10,12 +10,12 @@ import java.util.List;
  */
 
 public class Game {
-    private Board board;
+    private ServerBoard board;
 
     private int current = 0;
 
     public Game(ConnectedPlayer[] players) {
-        board = new Board(players);
+        board = new ServerBoard(players);
 
         //Start the game
         for (ConnectedPlayer player : players) {
@@ -27,7 +27,7 @@ public class Game {
     /**
      * @return board the game board
      */
-    public Board getBoard() {
+    public ServerBoard getBoard() {
         return board;
     }
 

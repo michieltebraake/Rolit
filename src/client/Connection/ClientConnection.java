@@ -1,10 +1,10 @@
 package client.Connection;
 
-import client.Board;
+import util.Board;
 import client.ComputerPlayer;
 import client.GUI.RolitView;
 import client.HumanPlayer;
-import client.Player;
+import util.Player;
 import client.Strategy.SmartStrategy;
 import util.*;
 import util.Peer.Peer;
@@ -115,9 +115,9 @@ public class ClientConnection extends Observable implements ProtocolHandler {
                     for (int i = 0; i < args.length; i++) {
                         // Check via username and only create computerplayer if player chose ai and username equals players name
                         if (ai) {
-                            players[i] = new ComputerPlayer(marks[i], args[i], new SmartStrategy());
+                            players[i] = new ComputerPlayer(args[i], marks[i], new SmartStrategy());
                         } else {
-                            players[i] = new HumanPlayer(marks[i], args[i]);
+                            players[i] = new HumanPlayer(args[i], marks[i]);
                         }
                     }
                     board = new Board(players);

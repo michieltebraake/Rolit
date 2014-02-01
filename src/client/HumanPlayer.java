@@ -1,10 +1,12 @@
 package client;
 
+import util.Board;
 import util.Mark;
+import util.Player;
 
 public class HumanPlayer extends Player {
-    public HumanPlayer(Mark mark, String name) {
-        super(mark, name);
+    public HumanPlayer(String name, Mark mark) {
+        super(name, mark);
     }
 
     @Override

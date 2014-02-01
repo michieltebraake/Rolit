@@ -1,6 +1,6 @@
 package client.GUI;
 
-import client.Board;
+import util.Board;
 import client.Connection.ClientConnection;
 import util.Mark;
 
