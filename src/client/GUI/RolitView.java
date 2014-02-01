@@ -73,6 +73,9 @@ public class RolitView extends JFrame implements Observer {
         return connectItem;
     }
 
+    /**
+     * @return restartItem the <code>JMenuItem</code> of the restart buttons
+     */
     public JMenuItem getRestartItem() {
         return restartItem;
     }
@@ -98,10 +101,6 @@ public class RolitView extends JFrame implements Observer {
         statusLabel.setText("Not connected.");
         clientConnection = null;
     }
-
-    /**
-     * @return restartItem the <code>JMenuItem</code> of the restart buttons
-     */
 
     private void setupFrame() {
         //Add buttons
@@ -180,7 +179,7 @@ public class RolitView extends JFrame implements Observer {
                 Mark mark = clientConnection.getBoard().getField(i);
                 buttons[i].setBackground(mark.getColor());
                 //Check if client is AI (buttons should always be disabled for
-                if (clientConnection.getAI() || (boolean) arg == false) {
+                if (clientConnection.getAI() || !((boolean) arg)) {
                     buttons[i].setEnabled(false);
                 } else {
                     if (mark != Mark.EMPTY) {

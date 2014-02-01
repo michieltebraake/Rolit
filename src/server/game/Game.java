@@ -3,29 +3,25 @@ package server.game;
 import util.Mark;
 
 import java.util.List;
-import java.util.Observable;
 
 /**
  * @author Rick Fontein en Michiel te Braake
  * @version 0.1
  */
 
-public class Game extends Observable {
+public class Game {
     private Board board;
 
     private int current = 0;
 
     public Game(ConnectedPlayer[] players) {
-        board = new Board(players); //TODO Grab players from protocol joins
+        board = new Board(players);
 
         //Start the game
         for (ConnectedPlayer player : players) {
             player.getServerConnection().startGame(players);
         }
         players[current].getServerConnection().requestMove();
-
-        setChanged();
-        notifyObservers();
     }
 
     /**
@@ -48,8 +44,6 @@ public class Game extends Observable {
     public void reset() {
         current = 0;
         board.resetBoard();
-        setChanged();
-        notifyObservers();
     }
 
     /**
