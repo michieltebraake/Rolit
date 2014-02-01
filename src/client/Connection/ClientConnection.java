@@ -46,6 +46,10 @@ public class ClientConnection extends Observable implements ProtocolHandler {
         authenticate();
     }
 
+    public int getCurrent() {
+        return current;
+    }
+
     public Board getBoard() {
         return board;
     }

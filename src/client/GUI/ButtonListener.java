@@ -24,7 +24,10 @@ public class ButtonListener implements ActionListener {
         } else if (rolitView.getRestartItem().equals(event.getSource())) {
             //TODO Send reset request via protocol
         } else if (rolitView.getConnectItem().equals(event.getSource())) {
-             new ConnectView(rolitView);
+            new ConnectView(rolitView);
+        } else if (rolitView.getShowPossibleMoves().equals(event.getSource())) {
+            rolitView.toggleShowMoves();
+            rolitView.update(rolitView.getClientConnection(), rolitView.getCanClickButtons());
         }
 
         JButton[] buttons = rolitView.getButtons();

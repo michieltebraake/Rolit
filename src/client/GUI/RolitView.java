@@ -9,6 +9,8 @@ import javax.swing.border.BevelBorder;
 import java.awt.*;
 import java.net.Socket;
 import java.security.PrivateKey;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -19,11 +21,11 @@ import java.util.Observer;
 
 public class RolitView extends JFrame implements Observer {
     /**
-	 * 
-	 */
-	private static final long serialVersionUID = -8820391706032092419L;
+     *
+     */
+    private static final long serialVersionUID = -8820391706032092419L;
 
-	private ButtonListener buttonListener;
+    private ButtonListener buttonListener;
 
     private JButton[] buttons = new JButton[Board.DIM * Board.DIM];
 
@@ -35,10 +37,12 @@ public class RolitView extends JFrame implements Observer {
     private JLabel gameLabel;
 
     private JMenuItem showPossibleMoves;
-    private JMenuItem makeAIMove;
-    private JMenuItem switchToAI;
 
     private ClientConnection clientConnection;
+
+    private boolean canClickButtons = false;
+
+    private boolean showMoves = false;
 
     public static void main(String[] args) {
         new RolitView();
@@ -73,6 +77,10 @@ public class RolitView extends JFrame implements Observer {
         return connectItem;
     }
 
+    public JMenuItem getShowPossibleMoves() {
+        return showPossibleMoves;
+    }
+
     /**
      * @return restartItem the <code>JMenuItem</code> of the restart buttons
      */
@@ -90,6 +98,14 @@ public class RolitView extends JFrame implements Observer {
 
     public ClientConnection getClientConnection() {
         return clientConnection;
+    }
+
+    public boolean getCanClickButtons() {
+        return canClickButtons;
+    }
+
+    public void toggleShowMoves() {
+        showMoves = !showMoves;
     }
 
     public void setupProtocol(Socket socket, String username, boolean ai, int players, PrivateKey privateKey) {
@@ -139,12 +155,6 @@ public class RolitView extends JFrame implements Observer {
         showPossibleMoves = new JMenuItem("Show possible moves");
         showPossibleMoves.addActionListener(buttonListener);
         cheats.add(showPossibleMoves);
-        makeAIMove = new JMenuItem("Make AI move");
-        makeAIMove.addActionListener(buttonListener);
-        cheats.add(makeAIMove);
-        switchToAI = new JMenuItem("Switch to AI");
-        switchToAI.addActionListener(buttonListener);
-        cheats.add(switchToAI);
 
         menuBar.add(file);
         menuBar.add(cheats);
@@ -174,12 +184,38 @@ public class RolitView extends JFrame implements Observer {
     @Override
     public void update(Observable observable, Object arg) {
         if (observable instanceof ClientConnection) {
+            canClickButtons = (boolean) arg;
+
+
             ClientConnection clientConnection = (ClientConnection) observable;
+
+            List<Integer> availableMoves = new ArrayList<>();
+
+            if (showMoves && canClickButtons) {
+                Board board = clientConnection.getBoard();
+                Mark playerMark = board.getPlayers()[clientConnection.getCurrent()].getMark();
+                for (int i = 0; i < buttons.length; i++) {
+                    if (board.getField(i) == Mark.EMPTY) {
+                        int[] coordinates = board.getCoordinates(i);
+                        if (board.canFormLineToOwnMark(playerMark, coordinates[0], coordinates[1])) {
+                            availableMoves.add(i);
+                        }
+                    }
+                }
+            }
+
             for (int i = 0; i < buttons.length; i++) {
                 Mark mark = clientConnection.getBoard().getField(i);
-                buttons[i].setBackground(mark.getColor());
+
+                //Set oolor of field (Gray if it is a suggested move, otherwise set it to the color of the mark on the field)
+                if (availableMoves.contains(i)) {
+                    buttons[i].setBackground(Color.GRAY);
+                } else {
+                    buttons[i].setBackground(mark.getColor());
+                }
+
                 //Check if client is AI (buttons should always be disabled for
-                if (clientConnection.getAI() || !((boolean) arg)) {
+                if (clientConnection.getAI() || !canClickButtons) {
                     buttons[i].setEnabled(false);
                 } else {
                     if (mark != Mark.EMPTY) {

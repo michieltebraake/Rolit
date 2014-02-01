@@ -189,16 +189,48 @@ public class Board {
         return foundOwnMark ? otherMarkFields : null;
     }
 
-    public boolean canFormLineFrom(Mark mark, int x, int y) {
+    public boolean canFormLineToOwnMark(Mark mark, int x, int y) {
         for (int i = 0; i < 8; i++) {
-            if (canFormLineFrom(mark, x, y, xMoves[i], yMoves[i])) {
+            if (canFormLineToOwnMark(mark, x, y, xMoves[i], yMoves[i])) {
                 return true;
             }
         }
         return false;
     }
 
-    private boolean canFormLineFrom(Mark mark, int x, int y, int addX, int addY) {
+    private boolean canFormLineToOwnMark(Mark mark, int x, int y, int addX, int addY) {
+        boolean foundOtherMark = false;
+
+        //Add to x & y before starting to loop (don't want to check the field that is being changed)
+        x += addX;
+        y += addY;
+
+        while (x >= 0 && x < DIM && y >= 0 && y < DIM) {
+            if (getField(x, y) == mark) {
+                return foundOtherMark;
+            } else if (getField(x, y) != mark && getField(x, y) != Mark.EMPTY) {
+                foundOtherMark = true;
+            } else {
+                return false;
+            }
+
+            x += addX;
+            y += addY;
+        }
+
+        return false;
+    }
+
+    public boolean canFormLineFromOwnMark(Mark mark, int x, int y) {
+        for (int i = 0; i < 8; i++) {
+            if (canFormLineFromOwnMark(mark, x, y, xMoves[i], yMoves[i])) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean canFormLineFromOwnMark(Mark mark, int x, int y, int addX, int addY) {
         boolean foundOtherMark = false;
 
         //Add to x & y before starting to loop (don't want to check the field that is being changed)
@@ -224,7 +256,7 @@ public class Board {
     public boolean canMakeMove(Mark mark) {
         for (int i = 0; i < DIM * DIM; i++) {
             if (getField(i) == mark) {
-                if (canFormLineFrom(mark, getCoordinates(i)[0], getCoordinates(i)[1])) {
+                if (canFormLineFromOwnMark(mark, getCoordinates(i)[0], getCoordinates(i)[1])) {
                     return true;
                 }
             }
