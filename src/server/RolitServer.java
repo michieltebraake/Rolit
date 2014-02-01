@@ -28,6 +28,9 @@ public class RolitServer {
         new RolitServer().start();
     }
 
+    public RolitServer(){
+    }
+
     private void start() {
         boolean startedServer = false;
         while (!startedServer) {
@@ -65,16 +68,32 @@ public class RolitServer {
         }
     }
 
+    /**
+     * Removes a player connection from the connections list.
+     *
+     * @param serverConnection connection to remove
+     */
     public void removeConnection(ServerConnection serverConnection) {
         connections.remove(serverConnection);
     }
 
+    /**
+     * Removes a player connection from all waitlists.
+     *
+     * @param serverConnection connection to remove
+     */
     public void removeAuthenticated(ServerConnection serverConnection) {
         authenticated2.remove(serverConnection);
         authenticated3.remove(serverConnection);
         authenticated4.remove(serverConnection);
     }
 
+    /**
+     * Checks if a player is connected (waiting in the not authenticated list, or in any waitlist for 2-4 player games)
+     *
+     * @param username name of user
+     * @return true if player is connected
+     */
     public boolean isConnected(String username) {
         return isConnected(username, connections) + isConnected(username, authenticated2) + isConnected(username, authenticated3) + isConnected(username, authenticated4) > 1;
     }
@@ -89,6 +108,13 @@ public class RolitServer {
         return connections;
     }
 
+    /**
+     * Makes a player join the waitlist for a game.
+     * Starts a game if enough players are in the waitlist.
+     *
+     * @param serverConnection connection to join the waitlist with
+     * @param players number of players to play with
+     */
     public void joinWaitlist(ServerConnection serverConnection, int players) {
         switch (players) {
             case 2:

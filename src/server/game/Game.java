@@ -14,6 +14,11 @@ public class Game {
 
     private int current = 0;
 
+    /**
+     * Constructs a game.
+     *
+     * @param players array of connected players
+     */
     public Game(ConnectedPlayer[] players) {
         board = new ServerBoard(players);
 

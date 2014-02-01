@@ -24,6 +24,13 @@ public class ServerConnection implements ProtocolHandler {
     private String username;
     private boolean authenticated;
 
+    /**
+     * Constructs a ServerConnection.
+     *
+     * @param socket socket connection with the player
+     * @param rolitServer rolitServer instance
+     * @param name name of client connection
+     */
     public ServerConnection(Socket socket, RolitServer rolitServer, String name) {
         name = "Client No. " + name;
         this.rolitServer = rolitServer;
@@ -36,23 +43,47 @@ public class ServerConnection implements ProtocolHandler {
         }
     }
 
+    /**
+     * @return username username of player
+     */
     public String getUsername() {
         return username;
     }
 
+    /**
+     * @return peer peer connection with the client
+     */
+    public ServerPeer getPeer(){
+        return peer;
+    }
+
+    /**
+     * @param game game player is in
+     */
     public void setGame(Game game) {
         this.game = game;
     }
 
+    /**
+     * @param publicKey public key of player
+     */
     public void setPublicKey(PublicKey publicKey) {
         this.publicKey = publicKey;
     }
 
+    /**
+     * Sends a token request to the client.
+     */
     public void requestToken() {
         plainToken = Crypto.generateToken();
         peer.send(Protocol.TOKEN_REQUEST + " " + plainToken);
     }
 
+    /**
+     * Sends a start game message with the names of the players in the game to the client.
+     *
+     * @param players players in the game
+     */
     public void startGame(ConnectedPlayer[] players) {
         StringBuilder message = new StringBuilder();
         for (ConnectedPlayer player : players) {
@@ -62,22 +93,37 @@ public class ServerConnection implements ProtocolHandler {
         peer.send(Protocol.START_GAME + " " + message.toString());
     }
 
+    /**
+     * Sends a request move message to the client.
+     * This informs the client that he needs to make a move.
+     */
     public void requestMove() {
         peer.send(Protocol.REQUEST_MOVE);
     }
 
+    /**
+     * Sends a broadcast move message to the client.
+     * This informs the client of a move that has been made.
+     *
+     * @param field id of the field where a mark was placed
+     */
     public void broadcastMove(int field) {
         peer.send(Protocol.BROADCAST_MOVE + " " + field);
     }
 
+    /**
+     * Sends a game over message to the client.
+     * This informs the client that the game has ended.
+     */
     public void gameOver() {
         peer.send(Protocol.GAME_OVER);
     }
 
-    public ServerPeer getPeer(){
-        return peer;
-    }
-
+    /**
+     * Handles a message that was received from the client.
+     *
+     * @param message String of the message that was received
+     */
     public void handleMessage(String message) {
         String[] messageSplit = message.split(" ");
         if (messageSplit.length > 0) {
